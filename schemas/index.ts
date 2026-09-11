@@ -1,4 +1,8 @@
 import type { SchemaTypeDefinition } from 'sanity'
 
-// Schema design is a separate task — intentionally empty for now.
-export const schemaTypes: SchemaTypeDefinition[] = []
+import partner from './partner'
+import pressLogo from './pressLogo'
+import project from './project'
+import siteSettings from './siteSettings'
+
+export const schemaTypes: SchemaTypeDefinition[] = [siteSettings, project, pressLogo, partner]
