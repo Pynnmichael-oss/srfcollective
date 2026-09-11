@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Bodoni_Moda, Work_Sans } from "next/font/google";
+
+import Nav from "@/components/Nav";
+
 import "../styles/globals.css";
 
 const bodoniModa = Bodoni_Moda({
@@ -24,7 +27,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${bodoniModa.variable} ${workSans.variable}`}>
-      <body>{children}</body>
+      <body>
+        <Nav />
+        {children}
+      </body>
     </html>
   );
 }

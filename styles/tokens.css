@@ -50,6 +50,8 @@
   --section-y-mobile: 72px;
   --nav-y-desktop: 28px;
   --nav-y-mobile: 20px;
+  --nav-gap-desktop: 36px; /* gap between nav links, desktop — added for Nav component */
+  --nav-gap-mobile: 18px; /* gap between nav links, mobile — added for Nav component */
 
   /* Motion */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);

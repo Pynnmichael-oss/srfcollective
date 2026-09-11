@@ -1,0 +1,106 @@
+.header {
+  background: var(--white);
+}
+
+/* Static header — no position: sticky / fixed (project decision). */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--nav-y-desktop) var(--gutter-desktop);
+}
+
+.wordmark {
+  position: relative;
+  display: inline-block;
+  font-family: var(--serif);
+  font-size: var(--t-wordmark);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--black);
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: var(--nav-gap-desktop);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.link {
+  display: inline-block;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.linkText {
+  position: relative;
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: var(--t-nav);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+/* Underline-on-hover / keyboard-focus. Grows left-to-right via scaleX.
+   Thickness and offset are in em (relative to font-size, itself a
+   token), not raw px, so no hardcoded px value is introduced here. */
+.wordmark::after,
+.linkText::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.15em;
+  width: 100%;
+  height: 0.08em;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-hover) var(--ease);
+}
+
+.wordmark:hover::after,
+.wordmark:focus-visible::after,
+.link:hover .linkText::after,
+.link:focus-visible .linkText::after {
+  transform: scaleX(1);
+}
+
+/* This underline is interaction-triggered motion, so it isn't exempt
+   from the "respect prefers-reduced-motion" constraint — see report. */
+@media (prefers-reduced-motion: reduce) {
+  .wordmark::after,
+  .linkText::after {
+    transition: none;
+  }
+}
+
+/* --bp-mobile is 560px. Media query conditions can't consume CSS custom
+   properties (no var() support in @media), which is a CSS platform
+   limitation, not a design choice — see report. Value matches the token. */
+@media (max-width: 560px) {
+  .nav {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--nav-y-mobile);
+    padding: var(--nav-y-mobile) var(--gutter-mobile);
+  }
+
+  .links {
+    gap: var(--nav-gap-mobile);
+  }
+
+  .link {
+    /* Pad the clickable area (not the text) to clear a 44px min tap
+       target: --nav-y-mobile top+bottom (40px) + ~13px text line-height
+       comfortably exceeds it. */
+    padding: var(--nav-y-mobile) 0;
+  }
+
+  .linkText {
+    font-size: var(--t-category);
+  }
+}
