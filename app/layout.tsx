@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Bodoni_Moda, Work_Sans } from "next/font/google";
 
+import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
+import { client } from "@/lib/sanity/client";
+import { siteSettingsQuery } from "@/lib/sanity/queries";
+import type { SiteSettings } from "@/lib/sanity/types";
 
 import "../styles/globals.css";
 
@@ -24,12 +28,18 @@ export const metadata: Metadata = {
   description: "SRF Collective",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Footer needs siteSettings (location, Instagram link). Fetched here
+  // too (page.tsx also fetches it) — Next dedupes identical fetches
+  // within a request, so this isn't a duplicate network call.
+  const siteSettings = await client.fetch<SiteSettings | null>(siteSettingsQuery);
+
   return (
     <html lang="en" className={`${bodoniModa.variable} ${workSans.variable}`}>
       <body>
         <Nav />
         {children}
+        <Footer siteSettings={siteSettings} />
       </body>
     </html>
   );

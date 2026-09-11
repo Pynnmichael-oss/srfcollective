@@ -52,6 +52,8 @@
   --nav-y-mobile: 20px;
   --nav-gap-desktop: 36px; /* gap between nav links, desktop — added for Nav component */
   --nav-gap-mobile: 18px; /* gap between nav links, mobile — added for Nav component */
+  --measure-hero: 560px; /* Hero subline max-width — added for Hero component */
+  --measure-lede: 540px; /* Activations lede max-width — added for Activations component */
 
   /* Motion */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);

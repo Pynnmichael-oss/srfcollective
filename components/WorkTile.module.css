@@ -1,0 +1,51 @@
+.tile {
+  margin: 0 0 var(--grid-gap);
+  break-inside: avoid;
+}
+
+.frame {
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform var(--dur-image) var(--ease);
+}
+
+.frame:hover .image {
+  transform: scale(1.03);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image {
+    transition: none;
+  }
+}
+
+.caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--grid-gap);
+  margin-top: calc(var(--grid-gap) / 2);
+}
+
+.client {
+  font-family: var(--serif);
+  font-size: var(--t-client);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.category {
+  font-family: var(--sans);
+  font-size: var(--t-category);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-align: right;
+}

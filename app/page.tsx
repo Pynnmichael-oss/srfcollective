@@ -1,69 +1,39 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Activations from "@/components/Activations";
+import Hero from "@/components/Hero";
+import PressMarquee from "@/components/PressMarquee";
+import WorkGrid from "@/components/WorkGrid";
+import { client } from "@/lib/sanity/client";
+import {
+  partnersQuery,
+  pressLogosQuery,
+  projectsQuery,
+  siteSettingsQuery,
+} from "@/lib/sanity/queries";
+import type { Partner, PressLogo, Project, SiteSettings } from "@/lib/sanity/types";
 
-export default function Home() {
+export default async function Home() {
+  const [siteSettings, projects, pressLogos, partners] = await Promise.all([
+    client.fetch<SiteSettings | null>(siteSettingsQuery),
+    client.fetch<Project[]>(projectsQuery),
+    client.fetch<PressLogo[]>(pressLogosQuery),
+    client.fetch<Partner[]>(partnersQuery),
+  ]);
+
+  // siteSettings is a singleton that's always seeded, so this shouldn't
+  // happen — but per the standing null-guard constraint, fail gracefully:
+  // sections that depend on it (Hero, Activations' heading/lede) simply
+  // omit that copy instead of crashing; WorkGrid and PressMarquee don't
+  // depend on siteSettings at all, so they render normally either way.
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <Hero headline={siteSettings?.heroHeadline} subline={siteSettings?.heroSubline} />
+      <WorkGrid projects={projects} />
+      <PressMarquee pressLogos={pressLogos} />
+      <Activations
+        heading={siteSettings?.activationsHeading}
+        lede={siteSettings?.activationsLede}
+        partners={partners}
+      />
+    </>
   );
 }
