@@ -1,0 +1,64 @@
+/* Design tokens — authoritative. Do not add, substitute, or rename. */
+
+:root {
+  /* Color */
+  --black: #000000; /* display type, wordmark, press band background */
+  --ink: #1c1c1c; /* body text */
+  --muted: #757575; /* captions, categories, footer, supporting copy */
+  --hairline: #e6e6e6; /* footer rule, dividers */
+  --white: #ffffff; /* page background */
+  /* No accent color. Photography supplies all color. */
+
+  /* Type families */
+  --serif: 'Bodoni Moda', 'Didot', 'Bodoni MT', Georgia, serif;
+  --sans: 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Type scale — every size in the codebase comes from this list.
+     Token          Family / weight       Tracking   Used for
+     --t-hero       serif 500, lh 0.98    0.005em    hero headline
+     --t-section    serif 500, lh 1.1     —          section headings
+     --t-wordmark   serif 600             0.02em     nav wordmark
+     --t-press      serif 500             0.06em     press marquee names
+     --t-partner    serif 500             —          partner names
+     --t-client     serif 500             —          gallery tile client name
+     --t-footer-mark serif 400            0.02em     footer wordmark
+     --t-lede       sans 300, lh 1.8      0.06em     hero supporting line
+     --t-body       sans 300, lh 1.8      —          body copy
+     --t-nav        sans 400              0.12em     nav links
+     --t-meta       sans 400              0.10em     footer meta
+     --t-category   sans 400              0.12em     tile category, mobile nav
+     If a component seems to need a size that isn't on this list, stop and ask
+     rather than inventing one. */
+  --t-hero: clamp(56px, 10vw, 128px);
+  --t-section: clamp(28px, 4vw, 44px);
+  --t-wordmark: 20px;
+  --t-press: 20px;
+  --t-partner: 19px;
+  --t-client: 17px;
+  --t-footer-mark: 15px;
+  --t-lede: 15px;
+  --t-body: 14px;
+  --t-nav: 13px;
+  --t-meta: 12px;
+  --t-category: 11px;
+
+  /* Spacing */
+  --gutter-desktop: 48px;
+  --gutter-mobile: 24px;
+  --grid-gap: 22px; /* masonry column + row gap, all breakpoints */
+  --section-y-desktop: 96px;
+  --section-y-mobile: 72px;
+  --nav-y-desktop: 28px;
+  --nav-y-mobile: 20px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-hover: 300ms; /* nav underline */
+  --dur-image: 600ms; /* tile image scale */
+  --dur-reveal: 700ms; /* scroll fade-in */
+  --marquee-duration: 32s;
+
+  /* Breakpoints */
+  --bp-tablet: 900px; /* gallery 3 columns -> 2 */
+  --bp-mobile: 560px; /* gallery 2 -> 1; nav switches to stacked */
+}
