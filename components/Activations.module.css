@@ -36,14 +36,32 @@
 }
 
 .partners {
+  /* Horizontal gap is deliberately much wider than --grid-gap (22px) —
+     that token is tuned for the tight masonry grid, not this editorial
+     "as featured in" band, where each logo should read individually.
+     Plain values, not tokens, matching the same carve-out already made
+     for .logo's height below (single use site, not part of a scale).
+     Vertical rhythm between wrapped rows is untouched (var(--grid-gap)),
+     only the horizontal spacing within a row widens. */
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: var(--grid-gap);
+  column-gap: 72px;
+  row-gap: var(--grid-gap);
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+/* --bp-tablet / --bp-mobile as literal px: media queries can't consume
+   CSS custom properties (see Nav.module.css's own note on this). Values
+   step down rather than scale linearly — checked by eye at each width,
+   not derived from the 72px desktop figure. */
+@media (max-width: 900px) {
+  .partners {
+    column-gap: 48px;
+  }
 }
 
 .copy ~ .partners {
@@ -85,5 +103,9 @@
 @media (max-width: 560px) {
   .section {
     padding: var(--section-y-mobile) var(--gutter-mobile);
+  }
+
+  .partners {
+    column-gap: 28px;
   }
 }
