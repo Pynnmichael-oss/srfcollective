@@ -62,9 +62,10 @@
      one of the --t- type-scale tokens; a plain value per the project's own
      carve-out for this case. .partners' align-items: center already keeps
      logos (and any text fallback) vertically centered regardless of each
-     one's own aspect ratio. */
+     one's own aspect ratio. Raised from 32px — read too small against the
+     section's whitespace/type scale (--t-section tops out at 44px). */
   display: block;
-  height: 32px;
+  height: 48px;
   width: auto;
   filter: grayscale(100%);
   transition: filter var(--dur-hover) var(--ease);
