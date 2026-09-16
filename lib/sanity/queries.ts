@@ -7,7 +7,14 @@ export const projectsQuery = groq`
   *[_type == "project"] | order(orderRank) {
     _id,
     _type,
+    mediaType,
     image,
+    video{
+      asset->{
+        playbackId,
+        status
+      }
+    },
     client,
     category,
     alt,

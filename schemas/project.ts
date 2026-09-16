@@ -9,13 +9,52 @@ export default defineType({
   icon: ImagesIcon,
   fields: [
     defineField({
+      name: 'mediaType',
+      title: 'Media type',
+      type: 'string',
+      description: 'Choose whether this project shows a photo or a video clip in the grid.',
+      options: {
+        list: [
+          { title: 'Image', value: 'image' },
+          { title: 'Video', value: 'video' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'image',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'image',
       title: 'Image',
       type: 'image',
       description:
         'The main photo for this project. Please use a photo that is at least 1600px on the long edge, under 2MB, and saved as a JPEG.',
       options: { hotspot: true },
-      validation: (rule) => rule.required(),
+      hidden: ({ parent }) => parent?.mediaType !== 'image',
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          const parent = context.parent as { mediaType?: string } | undefined
+          if (parent?.mediaType === 'image' && !value) {
+            return 'Required when media type is Image'
+          }
+          return true
+        }),
+    }),
+    defineField({
+      name: 'video',
+      title: 'Video',
+      type: 'mux.video',
+      description:
+        'The video clip for this project. Keep clips under about 60 seconds for the grid — longer-form content will have a home on individual project pages in the future.',
+      hidden: ({ parent }) => parent?.mediaType !== 'video',
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          const parent = context.parent as { mediaType?: string } | undefined
+          if (parent?.mediaType === 'video' && !value) {
+            return 'Required when media type is Video'
+          }
+          return true
+        }),
     }),
     defineField({
       name: 'client',
@@ -23,6 +62,28 @@ export default defineType({
       type: 'string',
       description: 'The name of the client or brand this project was made for.',
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      description:
+        'A web-friendly, unique identifier for this project, generated from the client name. Not used on the site yet — this is groundwork for future individual project pages.',
+      options: { source: 'client', maxLength: 96 },
+      validation: (rule) =>
+        rule.required().custom(async (slug, context) => {
+          if (!slug?.current) return true
+
+          const client = context.getClient({ apiVersion: '2024-01-01' })
+          const id = context.document?._id?.replace(/^drafts\./, '')
+
+          const existing = await client.fetch(
+            `count(*[_type == "project" && slug.current == $slug && !(_id in [$id, "drafts." + $id])])`,
+            { slug: slug.current, id },
+          )
+
+          return existing === 0 || 'This slug is already used by another project'
+        }),
     }),
     defineField({
       name: 'category',

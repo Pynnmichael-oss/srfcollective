@@ -8,6 +8,7 @@
 import { visionTool } from '@sanity/vision'
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
+import { muxInput } from 'sanity-plugin-mux-input'
 
 import { schemaTypes } from './schemas'
 import { SINGLETON_TYPES, structure } from './structure'
@@ -29,6 +30,8 @@ export default defineConfig({
     // Vision is for querying with GROQ from inside the Studio
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({ defaultApiVersion: apiVersion }),
+    // Upload UI + mux.video schema type for video project entries
+    muxInput(),
   ],
   document: {
     // Singletons (Site Settings) can only ever be reached through the fixed

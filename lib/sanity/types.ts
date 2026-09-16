@@ -16,10 +16,26 @@ export interface SanityImage {
   }
 }
 
+export interface MuxVideo {
+  asset?: {
+    playbackId?: string
+    // "ready" once Mux finishes processing; also "preparing", "errored", etc.
+    status?: string
+  } | null
+}
+
+export interface Slug {
+  _type: 'slug'
+  current: string
+}
+
 export interface Project {
   _id: string
   _type: 'project'
-  image: SanityImage
+  mediaType?: 'image' | 'video'
+  image?: SanityImage
+  video?: MuxVideo | null
+  slug?: Slug
   client: string
   category: string
   alt?: string
