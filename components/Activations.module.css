@@ -58,9 +58,27 @@
 }
 
 .logo {
+  /* Logo lockup height — an image dimension, not a font size, so it isn't
+     one of the --t- type-scale tokens; a plain value per the project's own
+     carve-out for this case. .partners' align-items: center already keeps
+     logos (and any text fallback) vertically centered regardless of each
+     one's own aspect ratio. */
   display: block;
-  height: var(--t-partner);
+  height: 32px;
   width: auto;
+  filter: grayscale(100%);
+  transition: filter var(--dur-hover) var(--ease);
+}
+
+.logo:hover,
+.logo:focus-visible {
+  filter: grayscale(0%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo {
+    transition: none;
+  }
 }
 
 @media (max-width: 560px) {

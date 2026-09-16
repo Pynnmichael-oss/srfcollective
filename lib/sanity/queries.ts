@@ -31,6 +31,9 @@ export const pressLogosQuery = groq`
   }
 `
 
+// logo is fetched bare (same convention as project.image): the returned
+// object's asset._ref already carries the source dimensions, parseable via
+// getImageDimensions() if ever needed — no asset-> dereference required.
 export const partnersQuery = groq`
   *[_type == "partner"] | order(orderRank) {
     _id,

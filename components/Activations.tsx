@@ -34,11 +34,21 @@ export default function Activations({ heading, lede, partners }: ActivationsProp
               {partner.logo?.asset?._ref ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={urlFor(partner.logo).height(32).fit('max').auto('format').url()}
+                  src={urlFor(partner.logo)
+                    .height(32)
+                    .width(200)
+                    .fit('max')
+                    .auto('format')
+                    .url()}
                   alt={partner.name}
+                  tabIndex={0}
                   className={styles.logo}
                 />
               ) : (
+                // Text fallback — used today for any partner without a logo,
+                // and kept here (not deleted) as the reversion path: to go
+                // back to all-text partner names, replace the ternary above
+                // with just `partner.name`.
                 partner.name
               )}
             </li>
