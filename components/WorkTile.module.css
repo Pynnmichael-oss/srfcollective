@@ -50,10 +50,20 @@
   text-align: right;
 }
 
+/* Video tiles don't have a fetched per-asset aspect ratio (see the video{}
+   projection in lib/sanity/queries.ts), so — unlike .frame's per-photo
+   inline aspect-ratio for images — .videoFrame carries its own fixed,
+   video-appropriate ratio here and the inline 4:3 photo fallback on the
+   ancestor .frame (WorkTile.tsx) is overridden below so it doesn't force
+   an image-shaped box onto video content. */
+.frame:has(> .videoFrame) {
+  aspect-ratio: auto !important;
+}
+
 .videoFrame {
   position: relative;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16 / 9;
 }
 
 .videoPoster {
@@ -68,4 +78,9 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  /* mux-player/media-chrome default the inner <video> to object-fit:
+     contain via this custom property — override to cover so the tile
+     fills edge-to-edge with no letterbox bars, cropping as needed. */
+  --media-object-fit: cover;
+  --media-object-position: center;
 }
