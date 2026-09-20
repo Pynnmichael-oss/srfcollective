@@ -29,6 +29,13 @@
   filter: brightness(0) invert(1);
 }
 
+.dot {
+  flex-shrink: 0;
+  font-family: var(--serif);
+  font-size: var(--t-press);
+  color: var(--white);
+}
+
 @keyframes marquee {
   from {
     transform: translateX(0);

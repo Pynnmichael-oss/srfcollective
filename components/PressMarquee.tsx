@@ -1,3 +1,5 @@
+import { Fragment } from 'react'
+
 import { urlFor } from '@/lib/sanity/image'
 import type { PressLogo } from '@/lib/sanity/types'
 
@@ -24,22 +26,35 @@ export default function PressMarquee({ pressLogos }: PressMarqueeProps) {
       <div className={styles.track} aria-hidden="true">
         {items.map((logo, index) => {
           const isDuplicate = index >= pressLogos.length
+          const isLast = index === items.length - 1
+          // A separator dot sits between this item and the next, so it
+          // belongs to the "duplicate" (hidden under reduced motion) set
+          // whenever either neighbor does — including the seam between
+          // the last real item and the first duplicate, which would
+          // otherwise leave a dangling trailing dot once duplicates are
+          // hidden.
+          const dotIsDuplicate = isDuplicate || index + 1 >= pressLogos.length
+
           return (
-            <span
-              key={`${logo._id}-${index}`}
-              className={isDuplicate ? `${styles.item} ${styles.duplicate}` : styles.item}
-            >
-              {logo.logo?.asset?._ref ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={urlFor(logo.logo).height(40).fit('max').auto('format').url()}
-                  alt={logo.name}
-                  className={styles.logoImg}
-                />
-              ) : (
-                logo.name
+            <Fragment key={`${logo._id}-${index}`}>
+              <span className={isDuplicate ? `${styles.item} ${styles.duplicate}` : styles.item}>
+                {logo.logo?.asset?._ref ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={urlFor(logo.logo).height(40).fit('max').auto('format').url()}
+                    alt={logo.name}
+                    className={styles.logoImg}
+                  />
+                ) : (
+                  logo.name
+                )}
+              </span>
+              {!isLast && (
+                <span className={dotIsDuplicate ? `${styles.dot} ${styles.duplicate}` : styles.dot}>
+                  &bull;
+                </span>
               )}
-            </span>
+            </Fragment>
           )
         })}
       </div>
