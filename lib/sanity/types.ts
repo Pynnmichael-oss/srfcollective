@@ -42,6 +42,35 @@ export interface Project {
   aspectRatioHint?: string
 }
 
+// Minimal shape of a Portable Text block as returned by the API — only what
+// the About page reads. (Not the full @portabletext/types definition.)
+export interface PortableTextSpan {
+  _type: 'span'
+  _key: string
+  text?: string
+  marks?: string[]
+}
+
+export interface PortableTextBlock {
+  _type: 'block'
+  _key: string
+  style?: string
+  markDefs?: { _key: string; _type: string }[]
+  children?: PortableTextSpan[]
+}
+
+// Every field is optional/nullable — the portrait in particular is unset
+// until Rosie delivers a photo, and the page must render without it.
+export interface AboutSettings {
+  _id: string
+  _type: 'aboutSettings'
+  portrait?: SanityImage | null
+  portraitAlt?: string | null
+  statement?: string | null
+  founderIntro?: string | null
+  body?: PortableTextBlock[] | null
+}
+
 export interface PressLogo {
   _id: string
   _type: 'pressLogo'

@@ -1,0 +1,103 @@
+/* Stacked and centered by default — this is also the whole layout when there
+   is no portrait (the current real state), matching the site's other
+   centered editorial bands (Hero, Activations). */
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: var(--section-y-mobile);
+  padding: var(--section-y-desktop) var(--gutter-desktop);
+  text-align: center;
+}
+
+.portrait {
+  margin: 0;
+  width: 100%;
+  /* Small portrait when stacked: half the site's lede measure. */
+  max-width: calc(var(--measure-lede) / 2);
+}
+
+.portraitImg {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Fixed editorial portrait, always black and white — no hover-to-color. */
+  filter: grayscale(100%);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Wide enough for the statement to sit on a few lines; the paragraphs
+     below set their own, narrower measure. */
+  max-width: calc(var(--measure-lede) * 2);
+}
+
+.statement {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-section);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--black);
+  text-wrap: balance;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--grid-gap);
+  max-width: var(--measure-lede);
+}
+
+.statement + .text {
+  margin-top: var(--section-y-mobile);
+}
+
+.founderIntro,
+.paragraph {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--ink);
+}
+
+/* Preserve any line breaks typed into the plain-text intro field. */
+.founderIntro {
+  white-space: pre-line;
+}
+
+.strong {
+  font-weight: 500;
+}
+
+/* --bp-tablet is 900px; media queries can't consume custom properties, so
+   the literal is used (same note as Nav.module.css / Activations.module.css).
+   Above it, a portrait sits beside the text instead of above it. */
+@media (min-width: 901px) {
+  .withPortrait {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+    align-items: center;
+    justify-items: stretch;
+    column-gap: var(--gutter-desktop);
+    text-align: left;
+  }
+
+  .withPortrait .portrait {
+    max-width: none;
+  }
+
+  .withPortrait .copy {
+    align-items: flex-start;
+    max-width: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .about {
+    padding: var(--section-y-mobile) var(--gutter-mobile);
+  }
+}

@@ -43,6 +43,20 @@ export const partnersQuery = groq`
   }
 `
 
+// Singleton, same shape as siteSettingsQuery. portrait is fetched bare (same
+// convention as project.image) — it's optional and may be unset.
+export const aboutSettingsQuery = groq`
+  *[_type == "aboutSettings"][0] {
+    _id,
+    _type,
+    portrait,
+    portraitAlt,
+    statement,
+    founderIntro,
+    body
+  }
+`
+
 export const siteSettingsQuery = groq`
   *[_type == "siteSettings"][0] {
     _id,
