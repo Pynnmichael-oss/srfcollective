@@ -1,0 +1,214 @@
+/* Centered editorial column, matching Hero / About / Services. */
+.contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--section-y-desktop) var(--gutter-desktop);
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-hero);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: 0.005em;
+  color: var(--black);
+}
+
+.form,
+.confirmation {
+  width: 100%;
+  max-width: var(--measure-lede);
+  margin-top: var(--section-y-desktop);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gutter-desktop);
+  text-align: left;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--grid-gap) / 2);
+}
+
+.label {
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--ink);
+}
+
+/* Input borders use --muted, not --hairline: --hairline is a decorative
+   divider color and is far too faint to mark the edge of a control. */
+.input {
+  width: 100%;
+  margin: 0;
+  padding: calc(var(--grid-gap) / 2) var(--grid-gap);
+  border: 1px solid var(--muted);
+  border-radius: 0;
+  background: var(--white);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--ink);
+}
+
+.textarea {
+  resize: vertical;
+}
+
+/* No outline is removed anywhere here — the browser's default keyboard focus
+   ring stays visible; the border just darkens to match. */
+.input:hover,
+.input:focus,
+.input[aria-invalid='true'] {
+  border-color: var(--black);
+}
+
+/* The design tokens define no error color ("no accent color"), so errors are
+   monochrome: a darker border plus a medium-weight message under the field. */
+.error {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  line-height: 1.8;
+  color: var(--black);
+}
+
+.group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-bottom: calc(var(--grid-gap) / 2);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  font-weight: 400;
+  line-height: 1.8;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+}
+
+/* Whole row is the click target; vertical padding brings it to roughly the
+   44px minimum tap size. */
+.option {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--grid-gap) / 2);
+  padding: calc(var(--grid-gap) / 2) 0;
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.checkbox {
+  flex-shrink: 0;
+  margin: 0;
+  accent-color: var(--black);
+  cursor: pointer;
+}
+
+/* Honeypot. Moved far off-screen and shrunk rather than display:none /
+   visibility:hidden, which many bots detect and skip. It is also
+   aria-hidden and tabindex=-1 in the markup, so it is invisible to
+   screen readers and keyboard users. The pixel values are a hiding
+   technique, not design values. */
+.trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.formError {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  font-weight: 500;
+  line-height: 1.8;
+  color: var(--black);
+}
+
+.submit {
+  padding: var(--grid-gap) var(--gutter-desktop);
+  border: 1px solid var(--black);
+  border-radius: 0;
+  background: var(--black);
+  font-family: var(--sans);
+  font-size: var(--t-nav);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+  cursor: pointer;
+  transition:
+    background var(--dur-hover) var(--ease),
+    color var(--dur-hover) var(--ease);
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--white);
+  color: var(--black);
+}
+
+.submit:disabled {
+  border-color: var(--muted);
+  background: var(--muted);
+  cursor: progress;
+}
+
+/* Programmatically focused on success (tabindex="-1", never in the tab
+   order), so it needs no focus ring. */
+.confirmation {
+  font-family: var(--serif);
+  font-size: var(--t-section);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--black);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .submit {
+    transition: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .contact {
+    padding: var(--section-y-mobile) var(--gutter-mobile);
+  }
+
+  .form,
+  .confirmation {
+    margin-top: var(--section-y-mobile);
+  }
+
+  .options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
