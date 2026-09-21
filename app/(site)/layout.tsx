@@ -7,7 +7,7 @@ import { client } from "@/lib/sanity/client";
 import { siteSettingsQuery } from "@/lib/sanity/queries";
 import type { SiteSettings } from "@/lib/sanity/types";
 
-import "../styles/globals.css";
+import "../../styles/globals.css";
 
 const bodoniModa = Bodoni_Moda({
   variable: "--font-bodoni-moda",
