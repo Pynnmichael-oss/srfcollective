@@ -57,6 +57,21 @@ export const aboutSettingsQuery = groq`
   }
 `
 
+// Singleton, same shape as aboutSettingsQuery. Array items are projected
+// with _key so the frontend can key them without falling back to an index.
+export const servicesSettingsQuery = groq`
+  *[_type == "servicesSettings"][0] {
+    _id,
+    _type,
+    intro,
+    services[]{
+      _key,
+      title,
+      description
+    }
+  }
+`
+
 export const siteSettingsQuery = groq`
   *[_type == "siteSettings"][0] {
     _id,

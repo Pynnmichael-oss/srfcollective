@@ -1,10 +1,10 @@
-import { CogIcon, UserIcon } from '@sanity/icons'
+import { CogIcon, ThListIcon, UserIcon } from '@sanity/icons'
 import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list'
 import type { StructureResolver } from 'sanity/structure'
 
 // Document types that are singletons — locked to a fixed document ID and
 // never shown in a generic "create new" list anywhere in the Studio.
-export const SINGLETON_TYPES = new Set(['siteSettings', 'aboutSettings'])
+export const SINGLETON_TYPES = new Set(['siteSettings', 'aboutSettings', 'servicesSettings'])
 
 export const structure: StructureResolver = (S, context) =>
   S.list()
@@ -21,6 +21,15 @@ export const structure: StructureResolver = (S, context) =>
         .icon(UserIcon)
         .child(
           S.document().schemaType('aboutSettings').documentId('aboutSettings').title('About Page'),
+        ),
+      S.listItem()
+        .title('Services Page')
+        .icon(ThListIcon)
+        .child(
+          S.document()
+            .schemaType('servicesSettings')
+            .documentId('servicesSettings')
+            .title('Services Page'),
         ),
       S.divider(),
       orderableDocumentListDeskItem({ type: 'project', title: 'Projects', S, context }),

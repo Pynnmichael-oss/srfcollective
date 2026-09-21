@@ -1,0 +1,89 @@
+/* Centered editorial column, matching the site's other centered bands
+   (Hero, Activations, About). The header mirrors Hero's headline + lede. */
+.services {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--section-y-desktop) var(--gutter-desktop);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-hero);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: 0.005em;
+  color: var(--black);
+}
+
+.intro {
+  margin: var(--grid-gap) 0 0;
+  max-width: var(--measure-hero);
+  font-family: var(--sans);
+  font-size: var(--t-lede);
+  font-weight: 300;
+  line-height: 1.8;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--section-y-mobile);
+  margin: var(--section-y-desktop) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Wide enough for a long title to sit on a couple of lines; the
+     description below sets its own, narrower measure. */
+  max-width: calc(var(--measure-lede) * 2);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-section);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--black);
+  text-wrap: balance;
+}
+
+.description {
+  margin: 0;
+  max-width: var(--measure-lede);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--ink);
+}
+
+.title + .description {
+  margin-top: var(--grid-gap);
+}
+
+@media (max-width: 560px) {
+  .services {
+    padding: var(--section-y-mobile) var(--gutter-mobile);
+  }
+
+  .list {
+    margin-top: var(--section-y-mobile);
+  }
+}

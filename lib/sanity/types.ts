@@ -71,6 +71,21 @@ export interface AboutSettings {
   body?: PortableTextBlock[] | null
 }
 
+export interface ServiceItem {
+  _key: string
+  title?: string | null
+  description?: string | null
+}
+
+// Every field is optional/nullable — the page tolerates a missing intro, an
+// empty list, and items missing a title or description.
+export interface ServicesSettings {
+  _id: string
+  _type: 'servicesSettings'
+  intro?: string | null
+  services?: ServiceItem[] | null
+}
+
 export interface PressLogo {
   _id: string
   _type: 'pressLogo'
