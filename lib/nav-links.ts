@@ -4,7 +4,6 @@
 // Only the homepage exists right now, so these hrefs 404 until
 // /about, /services, /contact are built in later tasks. Expected.
 export const NAV_LINKS = [
-  { label: 'Work', href: '/work' },
   { label: 'About', href: '/about' },
   { label: 'Services', href: '/services' },
   { label: 'Contact', href: '/contact' },
