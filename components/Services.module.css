@@ -1,17 +1,11 @@
-/* Centered editorial column, matching the site's other centered bands
-   (Hero, Activations, About). The header mirrors Hero's headline + lede. */
-.services {
+/* Intro — identical treatment to the homepage Hero (see Hero.module.css):
+   same centered band, same headline/lede type. */
+.intro {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   padding: var(--section-y-desktop) var(--gutter-desktop);
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .heading {
@@ -24,7 +18,7 @@
   color: var(--black);
 }
 
-.intro {
+.lede {
   margin: var(--grid-gap) 0 0;
   max-width: var(--measure-hero);
   font-family: var(--sans);
@@ -35,23 +29,36 @@
   color: var(--ink);
 }
 
-.list {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--section-y-mobile);
-  margin: var(--section-y-desktop) 0 0;
-  padding: 0;
-  list-style: none;
+/* List */
+.listSection {
+  padding-bottom: var(--section-y-desktop);
 }
 
-.item {
+.list {
+  margin: 0;
+  padding: 0 var(--gutter-desktop);
+  list-style: none;
+  border-top: 1px solid var(--hairline); /* "hairline" is 1px by definition */
+}
+
+.row {
+  position: relative; /* containing block for the absolutely positioned
+                          image, and a stacking context for the hover
+                          z-index below */
+  border-bottom: 1px solid var(--hairline);
+}
+
+.num {
+  font-family: var(--sans);
+  font-size: var(--t-category);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.titleGroup {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  /* Wide enough for a long title to sit on a couple of lines; the
-     description below sets its own, narrower measure. */
-  max-width: calc(var(--measure-lede) * 2);
 }
 
 .title {
@@ -61,12 +68,26 @@
   font-weight: 500;
   line-height: 1.1;
   color: var(--black);
-  text-wrap: balance;
+}
+
+.subtitle {
+  /* Tight pairing with the title directly above it — --grid-gap (22px) is
+     tuned for section rhythm, not this sub-grouping, so a small literal
+     margin is used instead (same carve-out precedent as Activations'
+     72px column-gap / 48px logo height). */
+  margin: 4px 0 0;
+  font-family: var(--sans);
+  font-size: var(--t-category);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--muted);
 }
 
 .description {
   margin: 0;
-  max-width: var(--measure-lede);
+  /* Literal per this component's spec — doesn't match either existing
+     measure token (--measure-hero: 560px, --measure-lede: 540px). */
+  max-width: 420px;
   font-family: var(--sans);
   font-size: var(--t-body);
   font-weight: 300;
@@ -74,16 +95,143 @@
   color: var(--ink);
 }
 
-.title + .description {
+/* Image slot always renders so every row keeps the same grid track (see
+   Services.tsx); height: 0 lets its absolutely positioned <img> center on
+   the row's own vertical midpoint via top: 50%, then bleed past it via
+   translate(-50%, -50%) — this is how the image overlaps the hairlines
+   above and below the row. */
+.imageSlot {
+  position: relative;
+  height: 0;
+}
+
+.image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* 240 / 300 mirror --service-image-w / --service-image-h exactly — kept
+     in sync by hand, since an <img> can't consume a CSS custom property
+     for intrinsic sizing here (it's positioned/sized independently of the
+     grid track, which is itself sized from the same two tokens). */
+  width: var(--service-image-w);
+  height: var(--service-image-h);
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* Desktop row layout */
+@media (min-width: 900px) {
+  .row {
+    display: grid;
+    grid-template-columns:
+      var(--service-num-col)
+      minmax(0, 1.25fr)
+      calc(var(--service-image-w) + var(--service-image-gutter))
+      minmax(0, 1fr);
+    column-gap: var(--grid-gap);
+    align-items: center;
+    padding-block: var(--service-row-y-desktop);
+  }
+}
+
+/* Mobile: no image column, everything stacks. --bp-tablet as a literal:
+   media query conditions can't consume CSS custom properties (see Nav's
+   own note on this same limitation). */
+@media (max-width: 899px) {
+  .row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--service-stack-gap);
+    padding-block: var(--service-row-y-mobile);
+  }
+
+  .imageSlot {
+    display: none;
+  }
+}
+
+/* Hover reveal — CSS only, no JS state. Scoped to devices that can
+   genuinely hover with a precise pointer, so the image never shows
+   (permanently invisible, no way to trigger it) on touch/coarse-pointer
+   devices even at desktop widths. */
+@media (hover: hover) and (pointer: fine) {
+  .image {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+    transition:
+      opacity var(--dur-image) var(--ease),
+      transform var(--dur-image) var(--ease);
+  }
+
+  .row:hover .image {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .row:hover {
+    z-index: 1;
+  }
+
+  .row:hover .num {
+    color: var(--black);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image {
+    transition: none;
+    transform: translate(-50%, -50%); /* no scale */
+  }
+}
+
+/* Closing */
+.closing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 var(--gutter-desktop) var(--section-y-desktop);
+}
+
+.closingHeading {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-section);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--black);
+}
+
+.closingLink {
+  display: inline-flex;
+  align-items: center;
+  /* 44px minimum tap target, guaranteed regardless of font metrics rather
+     than hand-tuned padding. */
+  min-height: 44px;
   margin-top: var(--grid-gap);
+  font-family: var(--sans);
+  font-size: var(--t-nav);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--black); /* literal 1px, same convention as the hairline rules above */
 }
 
 @media (max-width: 560px) {
-  .services {
+  .intro {
     padding: var(--section-y-mobile) var(--gutter-mobile);
   }
 
+  .listSection {
+    padding-bottom: var(--section-y-mobile);
+  }
+
   .list {
-    margin-top: var(--section-y-mobile);
+    padding: 0 var(--gutter-mobile);
+  }
+
+  .closing {
+    padding: 0 var(--gutter-mobile) var(--section-y-mobile);
   }
 }

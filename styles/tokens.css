@@ -65,4 +65,13 @@
   /* Breakpoints */
   --bp-tablet: 900px; /* gallery 3 columns -> 2 */
   --bp-mobile: 560px; /* gallery 2 -> 1; nav switches to stacked */
+
+  /* Services */
+  --service-num-col: 64px;
+  --service-image-w: 240px;
+  --service-image-h: 300px;
+  --service-image-gutter: 20px;
+  --service-row-y-desktop: 44px;
+  --service-row-y-mobile: 32px;
+  --service-stack-gap: 12px;
 }
