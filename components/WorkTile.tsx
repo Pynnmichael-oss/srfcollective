@@ -1,5 +1,8 @@
+import type { CSSProperties } from 'react'
+
 import { getImageDimensions, urlFor } from '@/lib/sanity/image'
-import type { Project } from '@/lib/sanity/types'
+import type { Project, SanityImage } from '@/lib/sanity/types'
+import { parseMuxRatio } from '@/lib/sanity/video'
 
 import styles from './WorkTile.module.css'
 import WorkTileVideo from './WorkTileVideo'
@@ -7,14 +10,17 @@ import WorkTileVideo from './WorkTileVideo'
 const WIDTHS = [400, 800, 1200, 1600]
 const SIZES = '(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw'
 
-// Same fallback dimensions getImageDimensions() uses when an image ref's
-// pixel size can't be parsed — reused here since the video{} projection
-// (see lib/sanity/queries.ts) doesn't fetch Mux asset dimensions.
-const FALLBACK_ASPECT = { width: 1600, height: 1200 }
-
 interface WorkTileProps {
   project: Project
   priority?: boolean
+}
+
+// A video's own Mux ratio may be missing or unparseable — fall back to the
+// project's image asset when one happens to be attached, so a tile is never
+// forced into a guessed shape.
+function getFallbackRatio(image: SanityImage | undefined) {
+  if (!image?.asset?._ref) return null
+  return getImageDimensions(image)
 }
 
 export default function WorkTile({ project, priority = false }: WorkTileProps) {
@@ -29,7 +35,15 @@ export default function WorkTile({ project, priority = false }: WorkTileProps) {
       return null
     }
 
-    const poster = `https://image.mux.com/${playbackId}/thumbnail.jpg?width=1200&fit_mode=smartcrop`
+    // Prefer the Mux asset's own ratio. If it's missing or unparseable,
+    // fall back to the project's image asset when one happens to be
+    // attached — otherwise skip rather than guess a shape (never 16:9).
+    const ratio = parseMuxRatio(project.video?.asset?.ratio) ?? getFallbackRatio(project.image)
+    if (!ratio) {
+      return null
+    }
+
+    const poster = `https://image.mux.com/${playbackId}/thumbnail.webp?width=1200`
     const alt = project.alt || project.client || 'Project video'
     const hasCaption = Boolean(project.client || project.category)
 
@@ -37,7 +51,7 @@ export default function WorkTile({ project, priority = false }: WorkTileProps) {
       <figure className={styles.tile}>
         <div
           className={styles.frame}
-          style={{ aspectRatio: `${FALLBACK_ASPECT.width} / ${FALLBACK_ASPECT.height}` }}
+          style={{ '--tile-ratio': `${ratio.width} / ${ratio.height}` } as CSSProperties}
         >
           <WorkTileVideo playbackId={playbackId} poster={poster} alt={alt} />
         </div>
@@ -76,10 +90,12 @@ export default function WorkTile({ project, priority = false }: WorkTileProps) {
     <figure className={styles.tile}>
       <div
         className={styles.frame}
-        style={{
-          aspectRatio: `${width} / ${height}`,
-          backgroundImage: `url(${placeholder})`,
-        }}
+        style={
+          {
+            '--tile-ratio': `${width} / ${height}`,
+            backgroundImage: `url(${placeholder})`,
+          } as CSSProperties
+        }
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

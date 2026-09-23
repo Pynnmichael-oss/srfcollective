@@ -12,13 +12,13 @@ export const projectsQuery = groq`
     video{
       asset->{
         playbackId,
-        status
+        status,
+        "ratio": data.aspect_ratio
       }
     },
     client,
     category,
-    alt,
-    aspectRatioHint
+    alt
   }
 `
 

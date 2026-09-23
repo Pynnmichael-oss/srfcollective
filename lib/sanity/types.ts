@@ -21,6 +21,8 @@ export interface MuxVideo {
     playbackId?: string
     // "ready" once Mux finishes processing; also "preparing", "errored", etc.
     status?: string
+    // Mux's own "W:H" string, e.g. "9:16" — parsed via parseMuxRatio().
+    ratio?: string | null
   } | null
 }
 
@@ -39,7 +41,6 @@ export interface Project {
   client: string
   category: string
   alt?: string
-  aspectRatioHint?: string
 }
 
 // Minimal shape of a Portable Text block as returned by the API — only what

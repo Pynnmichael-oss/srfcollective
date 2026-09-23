@@ -28,7 +28,7 @@ export default defineType({
       title: 'Image',
       type: 'image',
       description:
-        'The main photo for this project. Please use a photo that is at least 1600px on the long edge, under 2MB, and saved as a JPEG.',
+        'The main photo for this project. Please use a photo that is at least 1600px on the long edge, under 2MB, and saved as a JPEG. Upload it in whatever shape it naturally is — portrait or landscape both work, and the site shows it in its original shape, so there’s no need to crop it.',
       options: { hotspot: true },
       hidden: ({ parent }) => parent?.mediaType !== 'image',
       validation: (rule) =>
@@ -45,7 +45,7 @@ export default defineType({
       title: 'Video',
       type: 'mux.video',
       description:
-        'The video clip for this project. Keep clips under about 60 seconds for the grid — longer-form content will have a home on individual project pages in the future.',
+        'Upload your video exactly as exported. Portrait or landscape both work — the site shows it in its original shape, so there’s no need to crop it. Keep clips under about 60 seconds for the grid — longer-form content will have a home on individual project pages in the future.',
       hidden: ({ parent }) => parent?.mediaType !== 'video',
       validation: (rule) =>
         rule.custom((value, context) => {
@@ -100,12 +100,15 @@ export default defineType({
       description:
         'Optional. A short, plain description of what is in the photo — helps with accessibility and search engines. Leave blank if you are not sure what to put.',
     }),
+    // Superseded — every tile now renders at its asset's real aspect ratio
+    // automatically (see components/WorkTile.tsx), so this hint is no
+    // longer read anywhere. Hidden rather than deleted/patched: 5 existing
+    // documents have a value set, left in place for a separate cleanup.
     defineField({
       name: 'aspectRatioHint',
       title: 'Aspect ratio hint',
       type: 'string',
-      description:
-        'Optional — you can leave this blank. Only fill this in if the image looks oddly cropped in the gallery grid; a short note here (like "tall" or "wide") helps us adjust how it displays.',
+      hidden: true,
     }),
     orderRankField({ type: 'project' }),
   ],
