@@ -1,0 +1,28 @@
+/* Static (not sticky) — sits above Nav in normal document flow. Vertical
+   rhythm borrows Nav's own padding tokens since this strip sits directly
+   above it; horizontal gutters match every other band on the site. */
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--grid-gap);
+  padding: var(--nav-y-mobile) var(--gutter-desktop);
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: var(--t-category);
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.link {
+  color: var(--white);
+  text-decoration: underline;
+}
+
+@media (max-width: 560px) {
+  .banner {
+    padding: var(--nav-y-mobile) var(--gutter-mobile);
+  }
+}

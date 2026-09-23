@@ -1,22 +1,67 @@
+import { stegaClean } from "next-sanity";
+
 import Activations from "@/components/Activations";
 import Hero from "@/components/Hero";
 import PressMarquee from "@/components/PressMarquee";
 import WorkGrid from "@/components/WorkGrid";
-import { client } from "@/lib/sanity/client";
+import { sanityFetch } from "@/lib/sanity/fetch";
 import {
   partnersQuery,
   pressLogosQuery,
   projectsQuery,
   siteSettingsQuery,
 } from "@/lib/sanity/queries";
-import type { Partner, PressLogo, Project, SiteSettings } from "@/lib/sanity/types";
+import type {
+  Partner,
+  PressLogo,
+  Project,
+  SanityImage,
+  SiteSettings,
+} from "@/lib/sanity/types";
+
+// In draft mode, stega tags editable strings with invisible characters.
+// That's exactly what makes click-to-edit work for VISIBLE text (client
+// name, category, headline, lede — left untouched below), but the same
+// tagging would corrupt a value used for logic or built into a URL/attribute
+// rather than displayed as-is. Cleaned here, once, right after the fetch —
+// WorkTile/PressMarquee/Activations never need to know draft mode exists.
+function cleanImage(image: SanityImage | undefined): SanityImage | undefined {
+  if (!image) return image;
+  return { ...image, asset: stegaClean(image.asset) };
+}
+
+function cleanProject(project: Project): Project {
+  return {
+    ...project,
+    _id: stegaClean(project._id),
+    mediaType: stegaClean(project.mediaType),
+    image: cleanImage(project.image),
+    video: project.video && {
+      asset: project.video.asset && {
+        ...project.video.asset,
+        playbackId: stegaClean(project.video.asset.playbackId),
+        status: stegaClean(project.video.asset.status),
+        ratio: stegaClean(project.video.asset.ratio),
+      },
+    },
+    alt: stegaClean(project.alt),
+  };
+}
+
+function cleanPressLogo(logo: PressLogo): PressLogo {
+  return { ...logo, _id: stegaClean(logo._id), logo: cleanImage(logo.logo) };
+}
+
+function cleanPartner(partner: Partner): Partner {
+  return { ...partner, _id: stegaClean(partner._id), logo: cleanImage(partner.logo) };
+}
 
 export default async function Home() {
   const [siteSettings, projects, pressLogos, partners] = await Promise.all([
-    client.fetch<SiteSettings | null>(siteSettingsQuery),
-    client.fetch<Project[]>(projectsQuery),
-    client.fetch<PressLogo[]>(pressLogosQuery),
-    client.fetch<Partner[]>(partnersQuery),
+    sanityFetch<SiteSettings | null>(siteSettingsQuery),
+    sanityFetch<Project[]>(projectsQuery),
+    sanityFetch<PressLogo[]>(pressLogosQuery),
+    sanityFetch<Partner[]>(partnersQuery),
   ]);
 
   // siteSettings is a singleton that's always seeded, so this shouldn't
@@ -27,12 +72,12 @@ export default async function Home() {
   return (
     <>
       <Hero headline={siteSettings?.heroHeadline} subline={siteSettings?.heroSubline} />
-      <WorkGrid projects={projects} />
-      <PressMarquee pressLogos={pressLogos} />
+      <WorkGrid projects={projects.map(cleanProject)} />
+      <PressMarquee pressLogos={pressLogos.map(cleanPressLogo)} />
       <Activations
         heading={siteSettings?.activationsHeading}
         lede={siteSettings?.activationsLede}
-        partners={partners}
+        partners={partners.map(cleanPartner)}
       />
     </>
   );

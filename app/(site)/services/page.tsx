@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { stegaClean } from "next-sanity";
 
 import Services from "@/components/Services";
-import { client } from "@/lib/sanity/client";
+import { sanityFetch } from "@/lib/sanity/fetch";
 import { servicesSettingsQuery } from "@/lib/sanity/queries";
 import type { ServicesSettings } from "@/lib/sanity/types";
 
@@ -10,13 +11,14 @@ export const metadata: Metadata = {
 };
 
 export default async function ServicesPage() {
-  // Published content only — same as the client-wide default, stated
-  // explicitly here per the project's perspective convention.
-  const services = await client.fetch<ServicesSettings | null>(
-    servicesSettingsQuery,
-    {},
-    { perspective: "published" },
-  );
+  const services = await sanityFetch<ServicesSettings | null>(servicesSettingsQuery);
 
-  return <Services services={services} />;
+  // title/description stay untouched (visible text, click-to-edit); only
+  // the array key — used for React reconciliation, not display — is cleaned.
+  const cleanedServices = services && {
+    ...services,
+    services: services.services?.map((item) => ({ ...item, _key: stegaClean(item._key) })),
+  };
+
+  return <Services services={cleanedServices} />;
 }

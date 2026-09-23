@@ -7,6 +7,7 @@
 
 import { visionTool } from '@sanity/vision'
 import { defineConfig } from 'sanity'
+import { defineLocations, presentationTool } from 'sanity/presentation'
 import { structureTool } from 'sanity/structure'
 import { muxInput } from 'sanity-plugin-mux-input'
 
@@ -32,6 +33,45 @@ export default defineConfig({
     visionTool({ defaultApiVersion: apiVersion }),
     // Upload UI + mux.video schema type for video project entries
     muxInput(),
+    // Live preview of drafts inside the Studio, same-origin — no hardcoded
+    // domain, so this also works on preview deployments.
+    presentationTool({
+      previewUrl: {
+        previewMode: {
+          enable: '/api/draft-mode/enable',
+        },
+      },
+      resolve: {
+        locations: {
+          project: defineLocations({
+            select: { client: 'client' },
+            resolve: (doc) => ({
+              locations: [{ title: doc?.client || 'Untitled project', href: '/' }],
+            }),
+          }),
+          pressLogo: defineLocations({
+            select: { name: 'name' },
+            resolve: (doc) => ({
+              locations: [{ title: doc?.name || 'Untitled press logo', href: '/' }],
+            }),
+          }),
+          partner: defineLocations({
+            select: { name: 'name' },
+            resolve: (doc) => ({
+              locations: [{ title: doc?.name || 'Untitled partner', href: '/' }],
+            }),
+          }),
+          siteSettings: defineLocations({
+            select: {},
+            resolve: () => ({ locations: [{ title: 'Homepage', href: '/' }] }),
+          }),
+          aboutSettings: defineLocations({
+            select: {},
+            resolve: () => ({ locations: [{ title: 'About', href: '/about' }] }),
+          }),
+        },
+      },
+    }),
   ],
   document: {
     // Singletons (Site Settings) can only ever be reached through the fixed
