@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { draftMode } from "next/headers";
 import { Bodoni_Moda, Work_Sans } from "next/font/google";
 import { stegaClean } from "next-sanity";
-import { VisualEditing } from "next-sanity/visual-editing";
 
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import PreviewBanner from "@/components/PreviewBanner";
+import VisualEditing from "@/components/VisualEditing";
 import { sanityFetch } from "@/lib/sanity/fetch";
 import { siteSettingsQuery } from "@/lib/sanity/queries";
 import type { SiteSettings } from "@/lib/sanity/types";
