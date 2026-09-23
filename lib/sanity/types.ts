@@ -71,19 +71,53 @@ export interface AboutSettings {
   body?: PortableTextBlock[] | null
 }
 
-export interface ServiceItem {
-  _key: string
-  title?: string | null
-  description?: string | null
+// A dereferenced image asset (unlike SanityImage's bare _ref) — used where
+// the frontend needs the asset's real dimensions/LQIP up front, e.g. for a
+// fade-in with no layout shift.
+export interface SanityImageAsset {
+  _id: string
+  url: string
+  metadata?: {
+    lqip?: string
+    dimensions?: {
+      width: number
+      height: number
+      aspectRatio: number
+    }
+  }
 }
 
-// Every field is optional/nullable — the page tolerates a missing intro, an
-// empty list, and items missing a title or description.
-export interface ServicesSettings {
+export interface SanityImageWithAsset {
+  _type: 'image'
+  asset: SanityImageAsset
+  hotspot?: {
+    x: number
+    y: number
+    height: number
+    width: number
+  }
+}
+
+export interface Service {
   _id: string
-  _type: 'servicesSettings'
+  title: string
+  subtitle?: string | null
+  description: string
+  hoverImage?: SanityImageWithAsset | null
+}
+
+// heading/intro etc. describe the singleton document itself — the whole
+// thing is null (see ServicesPageData) until it's been published at all.
+export interface ServicesPage {
+  heading: string
   intro?: string | null
-  services?: ServiceItem[] | null
+  closingHeading?: string | null
+  closingLinkLabel?: string | null
+}
+
+export interface ServicesPageData {
+  page: ServicesPage | null
+  services: Service[]
 }
 
 export interface PressLogo {

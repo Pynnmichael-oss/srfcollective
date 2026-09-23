@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 import Services from "@/components/Services";
 import { client } from "@/lib/sanity/client";
-import { servicesSettingsQuery } from "@/lib/sanity/queries";
-import type { ServicesSettings } from "@/lib/sanity/types";
+import { servicesPageQuery } from "@/lib/sanity/queries";
+import type { ServicesPageData } from "@/lib/sanity/types";
 
 export const metadata: Metadata = {
   title: "Services | SRF Collective",
@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 export default async function ServicesPage() {
   // Published content only — same as the client-wide default, stated
   // explicitly here per the project's perspective convention.
-  const services = await client.fetch<ServicesSettings | null>(
-    servicesSettingsQuery,
+  const { page, services } = await client.fetch<ServicesPageData>(
+    servicesPageQuery,
     {},
     { perspective: "published" },
   );
 
-  return <Services services={services} />;
+  return <Services page={page} services={services} />;
 }
