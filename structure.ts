@@ -4,7 +4,7 @@ import type { StructureResolver } from 'sanity/structure'
 
 // Document types that are singletons — locked to a fixed document ID and
 // never shown in a generic "create new" list anywhere in the Studio.
-export const SINGLETON_TYPES = new Set(['siteSettings', 'aboutSettings', 'servicesSettings'])
+export const SINGLETON_TYPES = new Set(['siteSettings', 'aboutSettings', 'servicesPage'])
 
 export const structure: StructureResolver = (S, context) =>
   S.list()
@@ -22,17 +22,18 @@ export const structure: StructureResolver = (S, context) =>
         .child(
           S.document().schemaType('aboutSettings').documentId('aboutSettings').title('About Page'),
         ),
+      S.divider(),
+      orderableDocumentListDeskItem({ type: 'project', title: 'Projects', S, context }),
+      orderableDocumentListDeskItem({ type: 'pressLogo', title: 'Press Logos', S, context }),
+      orderableDocumentListDeskItem({ type: 'partner', title: 'Partners', S, context }),
       S.listItem()
         .title('Services Page')
         .icon(ThListIcon)
         .child(
           S.document()
-            .schemaType('servicesSettings')
-            .documentId('servicesSettings')
+            .schemaType('servicesPage')
+            .documentId('servicesPage')
             .title('Services Page'),
         ),
-      S.divider(),
-      orderableDocumentListDeskItem({ type: 'project', title: 'Projects', S, context }),
-      orderableDocumentListDeskItem({ type: 'pressLogo', title: 'Press Logos', S, context }),
-      orderableDocumentListDeskItem({ type: 'partner', title: 'Partners', S, context }),
+      orderableDocumentListDeskItem({ type: 'service', title: 'Services', S, context }),
     ])

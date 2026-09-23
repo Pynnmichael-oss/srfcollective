@@ -4,14 +4,16 @@ import aboutSettings from './aboutSettings'
 import partner from './partner'
 import pressLogo from './pressLogo'
 import project from './project'
-import servicesSettings from './servicesSettings'
+import service from './service'
+import servicesPage from './servicesPage'
 import siteSettings from './siteSettings'
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   siteSettings,
   aboutSettings,
-  servicesSettings,
+  servicesPage,
   project,
   pressLogo,
   partner,
+  service,
 ]

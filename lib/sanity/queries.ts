@@ -57,17 +57,17 @@ export const aboutSettingsQuery = groq`
   }
 `
 
-// Singleton, same shape as aboutSettingsQuery. Array items are projected
-// with _key so the frontend can key them without falling back to an index.
-export const servicesSettingsQuery = groq`
-  *[_type == "servicesSettings"][0] {
-    _id,
-    _type,
-    intro,
-    services[]{
-      _key,
-      title,
-      description
+// servicesPage is a singleton (may be null pre-publish); service is an
+// orderable document list, same convention as project/pressLogo/partner
+// above. hoverImage is dereferenced (unlike project/partner's bare image
+// convention) since the future hover UI needs the asset's real dimensions
+// up front for a fade-in with no layout shift.
+export const servicesPageQuery = groq`
+  {
+    "page": *[_type == "servicesPage"][0]{ heading, intro, closingHeading, closingLinkLabel },
+    "services": *[_type == "service" && defined(title)] | order(orderRank){
+      _id, title, subtitle, description,
+      hoverImage{ ..., asset->{ _id, url, metadata{ lqip, dimensions } } }
     }
   }
 `
