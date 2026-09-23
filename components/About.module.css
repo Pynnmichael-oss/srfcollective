@@ -1,11 +1,19 @@
-/* Stacked and centered by default — this is also the whole layout when there
-   is no portrait (the current real state), matching the site's other
-   centered editorial bands (Hero, Activations). */
+/* Whole section reads as one centered, balanced composition — capped so it
+   doesn't sprawl edge-to-edge on wide viewports, with equal margins either
+   side. Width is derived from existing tokens (twice the site's standard
+   text measure, joined by the standard desktop gutter as the inter-column
+   gap) rather than an arbitrary number — no dedicated container max-width
+   token exists elsewhere in tokens.css to reuse. Stacked and centered by
+   default — this is also the whole layout when there is no portrait (the
+   fallback state), matching the site's other centered editorial bands
+   (Hero, Activations). */
 .about {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   gap: var(--section-y-mobile);
+  max-width: calc(var(--measure-lede) * 2 + var(--gutter-desktop));
+  margin: 0 auto;
   padding: var(--section-y-desktop) var(--gutter-desktop);
   text-align: center;
 }
@@ -13,14 +21,18 @@
 .portrait {
   margin: 0;
   width: 100%;
-  /* Small portrait when stacked: half the site's lede measure. */
-  max-width: calc(var(--measure-lede) / 2);
+  overflow: hidden;
+  /* Editorial portrait crop, independent of the source photo's own
+     dimensions — same fixed-ratio + cover technique as the video tiles'
+     frame (WorkTile.module.css), just a taller ratio. */
+  aspect-ratio: 4 / 5;
 }
 
 .portraitImg {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   /* Fixed editorial portrait, always black and white — no hover-to-color. */
   filter: grayscale(100%);
 }
@@ -29,9 +41,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Wide enough for the statement to sit on a few lines; the paragraphs
-     below set their own, narrower measure. */
-  max-width: calc(var(--measure-lede) * 2);
+  width: 100%;
 }
 
 .statement {
@@ -76,23 +86,18 @@
 
 /* --bp-tablet is 900px; media queries can't consume custom properties, so
    the literal is used (same note as Nav.module.css / Activations.module.css).
-   Above it, a portrait sits beside the text instead of above it. */
+   Above it, a portrait sits beside the text instead of above it, roughly
+   equal in visual weight rather than a narrow strip next to a wide column. */
 @media (min-width: 901px) {
   .withPortrait {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
-    align-items: center;
-    justify-items: stretch;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
     column-gap: var(--gutter-desktop);
     text-align: left;
   }
 
-  .withPortrait .portrait {
-    max-width: none;
-  }
-
   .withPortrait .copy {
     align-items: flex-start;
-    max-width: none;
   }
 }
 
