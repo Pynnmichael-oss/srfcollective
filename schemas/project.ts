@@ -45,7 +45,7 @@ export default defineType({
       title: 'Video',
       type: 'mux.video',
       description:
-        'Upload your video exactly as exported. Portrait or landscape both work — the site shows it in its original shape, so there’s no need to crop it. Keep clips under about 60 seconds for the grid — longer-form content will have a home on individual project pages in the future.',
+        'Upload your video exactly as exported. Portrait or landscape both work — the site shows it in its original shape, so there’s no need to crop it. In the grid, it plays automatically as a silent, looping preview — there’s no expanded or full-sound playback on the site yet. If an upload fails with “Something went wrong,” message Michael — it’s usually an account limit, not your file.',
       hidden: ({ parent }) => parent?.mediaType !== 'video',
       validation: (rule) =>
         rule.custom((value, context) => {
