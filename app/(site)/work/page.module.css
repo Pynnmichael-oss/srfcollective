@@ -1,0 +1,16 @@
+.heading {
+  margin: 0;
+  padding: var(--section-y-desktop) var(--gutter-desktop) 0;
+  font-family: var(--serif);
+  font-size: var(--t-section);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--black);
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .heading {
+    padding: var(--section-y-mobile) var(--gutter-mobile) 0;
+  }
+}

@@ -22,3 +22,47 @@
     column-count: 1;
   }
 }
+
+/* "View all work" — same grow-from-left underline as the nav links (see
+   Nav.module.css's .linkText::after), on its own span so the underline
+   spans just the label, not the arrow. */
+.viewAll {
+  display: block;
+  width: fit-content;
+  margin: var(--section-y-mobile) auto 0;
+  font-family: var(--sans);
+  font-size: var(--t-nav);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.viewAllText {
+  position: relative;
+  display: inline-block;
+}
+
+.viewAllText::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.15em;
+  width: 100%;
+  height: 0.08em;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-hover) var(--ease);
+}
+
+.viewAll:hover .viewAllText::after,
+.viewAll:focus-visible .viewAllText::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewAllText::after {
+    transition: none;
+  }
+}

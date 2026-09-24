@@ -6,9 +6,9 @@ import PressMarquee from "@/components/PressMarquee";
 import WorkGrid from "@/components/WorkGrid";
 import { sanityFetch } from "@/lib/sanity/fetch";
 import {
+  featuredProjectsQuery,
   partnersQuery,
   pressLogosQuery,
-  projectsQuery,
   siteSettingsQuery,
 } from "@/lib/sanity/queries";
 import type {
@@ -57,9 +57,12 @@ function cleanPartner(partner: Partner): Partner {
 }
 
 export default async function Home() {
-  const [siteSettings, projects, pressLogos, partners] = await Promise.all([
+  const [siteSettings, featuredProjects, pressLogos, partners] = await Promise.all([
     sanityFetch<SiteSettings | null>(siteSettingsQuery),
-    sanityFetch<Project[]>(projectsQuery),
+    // GROQ's []-> on an entirely unset featuredProjects field returns null,
+    // not [] — Rosie hasn't curated any picks yet in the current dataset,
+    // so this is the live default state, not just an edge case.
+    sanityFetch<Project[] | null>(featuredProjectsQuery).then((projects) => projects ?? []),
     sanityFetch<PressLogo[]>(pressLogosQuery),
     sanityFetch<Partner[]>(partnersQuery),
   ]);
@@ -72,7 +75,7 @@ export default async function Home() {
   return (
     <>
       <Hero headline={siteSettings?.heroHeadline} subline={siteSettings?.heroSubline} />
-      <WorkGrid projects={projects.map(cleanProject)} />
+      <WorkGrid projects={featuredProjects.map(cleanProject)} viewAllHref="/work" />
       <PressMarquee pressLogos={pressLogos.map(cleanPressLogo)} />
       <Activations
         heading={siteSettings?.activationsHeading}
