@@ -105,6 +105,7 @@ export default function WorkTileVideo({ playbackId, poster, alt }: WorkTileVideo
           streamType="on-demand"
           playbackId={playbackId}
           poster={poster}
+          maxResolution="720p"
           muted
           loop
           playsInline
