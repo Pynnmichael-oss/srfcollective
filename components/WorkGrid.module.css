@@ -2,6 +2,16 @@
   padding: var(--section-y-desktop) var(--gutter-desktop);
 }
 
+.label {
+  margin: 0 0 var(--grid-gap);
+  font-family: var(--sans);
+  font-size: var(--t-nav);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
 .grid {
   column-count: 3;
   column-gap: var(--grid-gap);

@@ -75,7 +75,11 @@ export default async function Home() {
   return (
     <>
       <Hero headline={siteSettings?.heroHeadline} subline={siteSettings?.heroSubline} />
-      <WorkGrid projects={featuredProjects.map(cleanProject)} viewAllHref="/work" />
+      <WorkGrid
+        projects={featuredProjects.map(cleanProject)}
+        viewAllHref="/work"
+        label="Featured Work"
+      />
       <PressMarquee pressLogos={pressLogos.map(cleanPressLogo)} />
       <Activations
         heading={siteSettings?.activationsHeading}

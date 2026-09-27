@@ -6,6 +6,29 @@
   padding: var(--section-y-desktop) var(--gutter-desktop);
 }
 
+/* Frames the hero as a block: one rule directly under the nav, one closing
+   it before the gallery. Stretched full-width so it spans the hero's own
+   content width (inset by .hero's gutter padding, not edge to edge) while
+   the headline/subline stay centered. --grid-gap between rule and text
+   matches the existing "heading to content below it" spacing convention
+   (see .headline + .subline below, and Activations' .heading + .lede). */
+.rule {
+  align-self: stretch;
+  width: 100%;
+  height: 0;
+  margin: 0;
+  border: none;
+  border-top: var(--rule);
+}
+
+.rule:first-of-type {
+  margin-bottom: var(--grid-gap);
+}
+
+.rule:last-of-type {
+  margin-top: var(--grid-gap);
+}
+
 .headline {
   margin: 0;
   font-family: var(--serif);

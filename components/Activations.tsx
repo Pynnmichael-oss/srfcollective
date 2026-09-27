@@ -28,37 +28,39 @@ export default function Activations({ heading, lede, partners }: ActivationsProp
         </div>
       )}
       {hasPartners && (
-        <ul className={styles.partners}>
-          {partners.map((partner) => (
-            <li key={partner._id} className={styles.partner}>
-              {partner.logo?.asset?._ref ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  // Fetched height follows the .logo CSS height (48px) —
-                  // keep in sync with Activations.module.css, or the
-                  // <img> upscales a lower-res source and looks soft.
-                  // Deliberately height-only: @sanity/image-url auto-crops
-                  // to a center rect whenever both width() and height() are
-                  // given (to force that exact box), which silently
-                  // mangled square/vertical logos like LDV Properties'
-                  // (its mark+wordmark+icon lockup got center-cropped to a
-                  // thin illegible sliver). height() alone preserves each
-                  // logo's real aspect ratio with no cropping.
-                  src={urlFor(partner.logo).height(48).fit('max').auto('format').url()}
-                  alt={partner.name}
-                  tabIndex={0}
-                  className={styles.logo}
-                />
-              ) : (
-                // Text fallback — used today for any partner without a logo,
-                // and kept here (not deleted) as the reversion path: to go
-                // back to all-text partner names, replace the ternary above
-                // with just `partner.name`.
-                partner.name
-              )}
-            </li>
-          ))}
-        </ul>
+        <div className={styles.box}>
+          <ul className={styles.partners}>
+            {partners.map((partner) => (
+              <li key={partner._id} className={styles.partner}>
+                {partner.logo?.asset?._ref ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    // Fetched height follows the .logo CSS height (48px) —
+                    // keep in sync with Activations.module.css, or the
+                    // <img> upscales a lower-res source and looks soft.
+                    // Deliberately height-only: @sanity/image-url auto-crops
+                    // to a center rect whenever both width() and height() are
+                    // given (to force that exact box), which silently
+                    // mangled square/vertical logos like LDV Properties'
+                    // (its mark+wordmark+icon lockup got center-cropped to a
+                    // thin illegible sliver). height() alone preserves each
+                    // logo's real aspect ratio with no cropping.
+                    src={urlFor(partner.logo).height(48).fit('max').auto('format').url()}
+                    alt={partner.name}
+                    tabIndex={0}
+                    className={styles.logo}
+                  />
+                ) : (
+                  // Text fallback — used today for any partner without a logo,
+                  // and kept here (not deleted) as the reversion path: to go
+                  // back to all-text partner names, replace the ternary above
+                  // with just `partner.name`.
+                  partner.name
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </section>
   )

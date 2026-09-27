@@ -1,7 +1,36 @@
 .band {
-  overflow: hidden;
   background: var(--black);
-  padding: var(--section-y-mobile) 0;
+  padding: var(--press-y) var(--gutter-desktop);
+  display: flex;
+  align-items: center;
+  gap: var(--grid-gap);
+}
+
+/* Static — never part of the scrolling .track, so it's excluded from the
+   duplicated/aria-hidden marquee content and given its own real (non-hidden)
+   text, since it's meaningful, not decorative. */
+.label {
+  flex-shrink: 0;
+  font-family: var(--sans);
+  font-size: var(--t-category);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+/* Clips the marquee to its own box — see the comment in PressMarquee.tsx
+   for why this can't just be overflow:hidden on .band with .label and
+   .track as plain siblings. align-self: stretch is load-bearing at the
+   mobile/reduced-motion breakpoints below, where .band switches to
+   flex-direction: column: align-items: flex-start there would otherwise
+   size this wrapper to its content's own (huge, max-content) width
+   instead of the column's actual width, defeating overflow: hidden. */
+.trackWrapper {
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .track {
@@ -45,7 +74,23 @@
   }
 }
 
+@media (max-width: 560px) {
+  .band {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--press-y) var(--gutter-mobile);
+  }
+}
+
+/* Reduced motion turns .track into a static wrapped block (below) — at
+   that point it no longer reads as a single line next to the label, so
+   the label stacks above it here too, not just at the mobile breakpoint. */
 @media (prefers-reduced-motion: reduce) {
+  .band {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .track {
     animation: none;
     transform: none;

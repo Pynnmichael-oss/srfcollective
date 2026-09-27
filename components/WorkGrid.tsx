@@ -10,6 +10,9 @@ interface WorkGridProps {
   // Renders a centered "View all work" link below the grid when set — used
   // on the homepage (linking to /work); omitted on /work itself.
   viewAllHref?: string
+  // Renders a left-aligned label above the grid when set — used on the
+  // homepage ("Featured Work"); omitted on /work itself.
+  label?: string
 }
 
 // Desktop is 3 CSS columns. Since this is a columns-based masonry (not a
@@ -18,13 +21,14 @@ interface WorkGridProps {
 // task, not a guaranteed visual first row on every breakpoint.
 const EAGER_COUNT = 3
 
-export default function WorkGrid({ projects, viewAllHref }: WorkGridProps) {
+export default function WorkGrid({ projects, viewAllHref, label }: WorkGridProps) {
   if (!projects.length) {
     return null
   }
 
   return (
     <section className={styles.section} aria-label="Work">
+      {label && <p className={styles.label}>{label}</p>}
       <div className={styles.grid}>
         {projects.map((project, index) => (
           <WorkTile key={project._id} project={project} priority={index < EAGER_COUNT} />
