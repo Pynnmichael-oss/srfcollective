@@ -19,6 +19,9 @@
   letter-spacing: 0.02em;
   color: var(--black);
   text-decoration: none;
+  /* Never wraps to a second line, at any width — this is the one property
+     that applies at every breakpoint rather than switching at a threshold. */
+  white-space: nowrap;
 }
 
 .links {
@@ -78,10 +81,14 @@
   }
 }
 
-/* --bp-mobile is 560px. Media query conditions can't consume CSS custom
+/* --bp-tablet is 900px. Media query conditions can't consume CSS custom
    properties (no var() support in @media), which is a CSS platform
-   limitation, not a design choice — see report. Value matches the token. */
-@media (max-width: 560px) {
+   limitation, not a design choice — see report. Value matches the token.
+   Stacked layout applies across the full <=900px range (both the <=560px
+   phone range and the 561-900px tablet range below it share this same
+   wordmark-row-then-centered-links-row structure, gap, and tap-target
+   padding); only font sizes narrow further at <=560px, in the next block. */
+@media (max-width: 900px) {
   .nav {
     flex-direction: column;
     align-items: center;
@@ -99,7 +106,13 @@
        comfortably exceeds it. */
     padding: var(--nav-y-mobile) 0;
   }
+}
 
+/* --bp-mobile is 560px. Link text and wordmark step down to their smaller
+   sizes only in this narrower range — from 561-900px, .linkText stays at
+   the base --t-nav size and .wordmark stays at --t-wordmark (set above),
+   per the stacked layout's own breakpoint (900px) not matching this one. */
+@media (max-width: 560px) {
   .linkText {
     font-size: var(--t-category);
   }
