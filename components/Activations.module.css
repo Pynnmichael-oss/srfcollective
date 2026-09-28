@@ -35,12 +35,15 @@
   margin-top: var(--grid-gap);
 }
 
-/* Wraps the logos in a surface-colored card, spanning the section's full
-   content width (align-self: stretch overrides .section's own centered
-   flex sizing) so the logos below can spread out edge-to-edge while the
-   heading/lede above stay centered as a block. */
+/* Full-bleed: breaks out of .section's own gutter padding with negative
+   margins equal to it, so the gray background runs edge-to-edge with the
+   viewport (there's no outer max-width container to fight — .section
+   itself already spans the full body width). Padding stays at
+   --gutter-desktop so the logos inside still line up with the gutter,
+   same as before the break-out. */
 .box {
   align-self: stretch;
+  margin: 0 calc(-1 * var(--gutter-desktop));
   background: var(--surface);
   padding: var(--grid-gap) var(--gutter-desktop);
 }
@@ -120,6 +123,7 @@
   }
 
   .box {
+    margin: 0 calc(-1 * var(--gutter-mobile));
     padding: var(--grid-gap) var(--gutter-mobile);
   }
 
