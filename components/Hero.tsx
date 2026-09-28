@@ -14,7 +14,6 @@ export default function Hero({ headline, subline }: HeroProps) {
 
   return (
     <section className={styles.hero}>
-      <hr className={styles.rule} />
       <h1 className={styles.headline}>{headline}</h1>
       {subline && <p className={styles.subline}>{subline}</p>}
       <hr className={styles.rule} />

@@ -1,14 +1,15 @@
 .section {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
   padding: var(--section-y-desktop) var(--gutter-desktop);
 }
 
 .copy {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   max-width: var(--measure-lede);
 }
 
@@ -34,10 +35,10 @@
   margin-top: var(--grid-gap);
 }
 
-/* Wraps the logos in a surface-colored card. Spans the section's full
-   content width (align-self: stretch — .section no longer centers its
-   children) so the heading above lines up with this box's left edge;
-   the logos inside stay centered as a group, unchanged. */
+/* Wraps the logos in a surface-colored card, spanning the section's full
+   content width (align-self: stretch overrides .section's own centered
+   flex sizing) so the logos below can spread out edge-to-edge while the
+   heading/lede above stay centered as a block. */
 .box {
   align-self: stretch;
   background: var(--surface);

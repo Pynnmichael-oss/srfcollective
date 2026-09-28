@@ -31,7 +31,7 @@
      --t-category   sans 400              0.12em     tile category, mobile nav
      If a component seems to need a size that isn't on this list, stop and ask
      rather than inventing one. */
-  --t-hero: clamp(28px, 3vw, 40px);
+  --t-hero: clamp(56px, 10vw, 128px);
   --t-section: clamp(28px, 4vw, 44px);
   --t-wordmark: 44px;
   --t-wordmark-mobile: 30px;
