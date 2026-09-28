@@ -1,9 +1,12 @@
 .section {
-  padding: var(--section-y-desktop) var(--gutter-desktop);
+  /* Top padding is the gap from Hero's closing rule to the label directly
+     below it — capped at one gutter, not a full section gap. Bottom
+     padding (space before the next section) is unchanged. */
+  padding: var(--gutter-desktop) var(--gutter-desktop) var(--section-y-desktop);
 }
 
 .label {
-  margin: 0 0 var(--grid-gap);
+  margin: 0 0 var(--label-gap);
   font-family: var(--sans);
   font-size: var(--t-nav);
   font-weight: 400;
@@ -25,7 +28,7 @@
 
 @media (max-width: 560px) {
   .section {
-    padding: var(--section-y-mobile) var(--gutter-mobile);
+    padding: var(--gutter-mobile) var(--gutter-mobile) var(--section-y-mobile);
   }
 
   .grid {

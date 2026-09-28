@@ -31,9 +31,10 @@
      --t-category   sans 400              0.12em     tile category, mobile nav
      If a component seems to need a size that isn't on this list, stop and ask
      rather than inventing one. */
-  --t-hero: clamp(36px, 5vw, 64px);
+  --t-hero: clamp(28px, 3vw, 40px);
   --t-section: clamp(28px, 4vw, 44px);
-  --t-wordmark: 28px;
+  --t-wordmark: 44px;
+  --t-wordmark-mobile: 30px;
   --t-press: 20px;
   --t-partner: 19px;
   --t-client: 17px;
@@ -57,6 +58,11 @@
   --measure-hero: 560px; /* Hero subline max-width — added for Hero component */
   --measure-lede: 540px; /* Activations lede max-width — added for Activations component */
   --press-y: 14px; /* press band vertical padding */
+  --hero-pad-y-desktop: 56px; /* hero: space between each rule and the headline/subline */
+  --hero-pad-y-mobile: 40px;
+  --label-gap: 16px; /* gap between a section label and the content directly below it */
+  --logo-h: 64px; /* partner logo height */
+  --logo-h-mobile: 44px;
 
   /* Motion */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);

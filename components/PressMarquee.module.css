@@ -31,6 +31,12 @@
   align-self: stretch;
   min-width: 0;
   overflow: hidden;
+  /* Names dissolve into the label instead of hard-clipping against it —
+     only while the marquee is actually animating (removed under reduced
+     motion below, where names are wrapped and static, not sliding past
+     this edge). --gutter-desktop is "about the width of one gutter". */
+  mask-image: linear-gradient(to right, transparent, black var(--gutter-desktop));
+  -webkit-mask-image: linear-gradient(to right, transparent, black var(--gutter-desktop));
 }
 
 .track {
@@ -80,6 +86,11 @@
     align-items: flex-start;
     padding: var(--press-y) var(--gutter-mobile);
   }
+
+  .trackWrapper {
+    mask-image: linear-gradient(to right, transparent, black var(--gutter-mobile));
+    -webkit-mask-image: linear-gradient(to right, transparent, black var(--gutter-mobile));
+  }
 }
 
 /* Reduced motion turns .track into a static wrapped block (below) — at
@@ -89,6 +100,11 @@
   .band {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .trackWrapper {
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 
   .track {

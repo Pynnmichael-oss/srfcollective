@@ -3,15 +3,19 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: var(--section-y-desktop) var(--gutter-desktop);
+  /* Horizontal inset only — the top rule sits directly under the nav
+     (no vertical padding here to push it down), and the bottom rule
+     closes the box with no added space before the gallery below it. */
+  padding: 0 var(--gutter-desktop);
 }
 
-/* Frames the hero as a block: one rule directly under the nav, one closing
-   it before the gallery. Stretched full-width so it spans the hero's own
-   content width (inset by .hero's gutter padding, not edge to edge) while
-   the headline/subline stay centered. --grid-gap between rule and text
-   matches the existing "heading to content below it" spacing convention
-   (see .headline + .subline below, and Activations' .heading + .lede). */
+/* Frames the hero as a tight box: one rule directly under the nav (acting
+   as the header's own bottom border), one closing it before the gallery.
+   Stretched full-width so it spans the hero's own content width (inset by
+   .hero's gutter padding, not edge to edge) while the headline/subline
+   stay centered. --hero-pad-y-desktop sits between each rule and the
+   text; --grid-gap (below) stays between the headline and subline
+   themselves, unchanged from before. */
 .rule {
   align-self: stretch;
   width: 100%;
@@ -22,11 +26,11 @@
 }
 
 .rule:first-of-type {
-  margin-bottom: var(--grid-gap);
+  margin-bottom: var(--hero-pad-y-desktop);
 }
 
 .rule:last-of-type {
-  margin-top: var(--grid-gap);
+  margin-top: var(--hero-pad-y-desktop);
 }
 
 .headline {
@@ -56,6 +60,14 @@
 
 @media (max-width: 560px) {
   .hero {
-    padding: var(--section-y-mobile) var(--gutter-mobile);
+    padding: 0 var(--gutter-mobile);
+  }
+
+  .rule:first-of-type {
+    margin-bottom: var(--hero-pad-y-mobile);
+  }
+
+  .rule:last-of-type {
+    margin-top: var(--hero-pad-y-mobile);
   }
 }

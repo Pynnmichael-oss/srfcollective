@@ -103,4 +103,8 @@
   .linkText {
     font-size: var(--t-category);
   }
+
+  .wordmark {
+    font-size: var(--t-wordmark-mobile);
+  }
 }

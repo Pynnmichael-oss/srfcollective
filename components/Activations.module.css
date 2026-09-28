@@ -49,17 +49,19 @@
 }
 
 .partners {
-  /* Horizontal gap is deliberately much wider than --grid-gap (22px) —
-     that token is tuned for the tight masonry grid, not this editorial
-     "as featured in" band, where each logo should read individually.
-     Plain values, not tokens, matching the same carve-out already made
-     for .logo's height below (single use site, not part of a scale).
-     Vertical rhythm between wrapped rows is untouched (var(--grid-gap)),
-     only the horizontal spacing within a row widens. */
+  /* space-evenly distributes logos across the box's full width instead of
+     clustering them in the center. Horizontal gap is a floor, not the
+     only source of spacing — deliberately much wider than --grid-gap
+     (22px), that token is tuned for the tight masonry grid, not this
+     editorial "as featured in" band, where each logo should read
+     individually. Plain values, not tokens, matching the same carve-out
+     already made for .logo's height below (single use site, not part of
+     a scale). Vertical rhythm between wrapped rows is untouched
+     (var(--grid-gap)), only the horizontal spacing within a row widens. */
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   column-gap: 72px;
   row-gap: var(--grid-gap);
   list-style: none;
@@ -85,16 +87,18 @@
 }
 
 .logo {
-  /* Logo lockup height — an image dimension, not a font size, so it isn't
-     one of the --t- type-scale tokens; a plain value per the project's own
-     carve-out for this case. .partners' align-items: center already keeps
-     logos (and any text fallback) vertically centered regardless of each
-     one's own aspect ratio. Raised from 32px — read too small against the
-     section's whitespace/type scale (--t-section tops out at 44px). */
+  /* .partners' align-items: center already keeps logos (and any text
+     fallback) vertically centered regardless of each one's own aspect
+     ratio. mix-blend-mode: multiply makes an opaque white background
+     baked into a logo's own source image disappear against --surface
+     (white * anything = anything under multiply), without touching the
+     logo's real artwork. */
   display: block;
-  height: 48px;
+  height: var(--logo-h);
   width: auto;
+  object-fit: contain;
   filter: grayscale(100%);
+  mix-blend-mode: multiply;
   transition: filter var(--dur-hover) var(--ease);
 }
 
@@ -120,5 +124,9 @@
 
   .partners {
     column-gap: 28px;
+  }
+
+  .logo {
+    height: var(--logo-h-mobile);
   }
 }
