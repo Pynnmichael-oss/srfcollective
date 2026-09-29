@@ -28,7 +28,17 @@ export default function WorkGrid({ projects, viewAllHref, label }: WorkGridProps
 
   return (
     <section className={styles.section} aria-label="Work">
-      {label && <p className={styles.label}>{label}</p>}
+      {label && (
+        <div className={styles.header}>
+          <p className={styles.label}>{label}</p>
+          {viewAllHref && (
+            <Link href={viewAllHref} className={styles.headerViewAll}>
+              <span className={styles.viewAllText}>View all work</span>{' '}
+              <span aria-hidden="true">→</span>
+            </Link>
+          )}
+        </div>
+      )}
       <div className={styles.grid}>
         {projects.map((project, index) => (
           <WorkTile key={project._id} project={project} priority={index < EAGER_COUNT} />

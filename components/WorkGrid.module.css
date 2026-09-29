@@ -1,18 +1,30 @@
 .section {
-  /* Top padding is the gap from Hero's closing rule to the label directly
-     below it — capped at one gutter, not a full section gap. Bottom
-     padding (space before the next section) is unchanged. */
+  /* Top padding is the gap from Hero to the header row directly below it —
+     capped at one gutter, not a full section gap. Bottom padding (space
+     before the next section) is unchanged. */
   padding: var(--gutter-desktop) var(--gutter-desktop) var(--section-y-desktop);
 }
 
-.label {
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--grid-gap);
   margin: 0 0 var(--label-gap);
+}
+
+.label {
+  margin: 0;
   font-family: var(--sans);
   font-size: var(--t-nav);
   font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink);
+}
+
+.headerViewAll {
+  display: inline-block;
 }
 
 .grid {
@@ -39,16 +51,20 @@
 /* "View all work" — same grow-from-left underline as the nav links (see
    Nav.module.css's .linkText::after), on its own span so the underline
    spans just the label, not the arrow. */
-.viewAll {
-  display: block;
-  width: fit-content;
-  margin: var(--section-y-mobile) auto 0;
+.viewAll,
+.headerViewAll {
   font-family: var(--sans);
   font-size: var(--t-nav);
   font-weight: 400;
   letter-spacing: 0.12em;
   color: var(--ink);
   text-decoration: none;
+}
+
+.viewAll {
+  display: block;
+  width: fit-content;
+  margin: var(--section-y-mobile) auto 0;
 }
 
 .viewAllText {
@@ -70,7 +86,9 @@
 }
 
 .viewAll:hover .viewAllText::after,
-.viewAll:focus-visible .viewAllText::after {
+.viewAll:focus-visible .viewAllText::after,
+.headerViewAll:hover .viewAllText::after,
+.headerViewAll:focus-visible .viewAllText::after {
   transform: scaleX(1);
 }
 
