@@ -20,7 +20,7 @@
      --t-hero       serif 500, lh 0.95    0.005em    hero display wordmark
      --t-section    serif 500, lh 1.1     —          section headings
      --t-wordmark   serif 600             0.02em     nav wordmark
-     --t-press      serif 500             0.06em     "As seen in" outlet names
+     --t-press      serif 500             0.06em     press marquee names
      --t-partner    serif 500             —          partner names
      --t-client     serif 500             —          gallery tile client name
      --t-footer-mark serif 400            0.02em     footer wordmark
@@ -59,6 +59,7 @@
   --nav-gap-mobile: 12px; /* gap between nav links, mobile stacked layout (was 18px, tightened to fit 5 links at 320px) */
   --measure-hero: 560px; /* Hero subline max-width — added for Hero component */
   --measure-lede: 540px; /* Activations lede max-width — added for Activations component */
+  --press-y: 14px; /* press band vertical padding */
   --hero-pad-y-desktop: 56px; /* hero: vertical section padding, top and bottom */
   --hero-pad-y-mobile: 40px;
   --label-gap: 16px; /* gap between a section label and the content directly below it */
@@ -73,6 +74,7 @@
   --ambient-blur: 48px; /* video spotlight's blurred background still */
   --ambient-scale: 1.2; /* oversizes the ambient still so blurring it never reveals an edge */
   --zoom-from: 0.96; /* video spotlight player's entrance scale */
+  --marquee-duration: 32s;
 
   /* Breakpoints */
   --bp-tablet: 900px; /* gallery 3 columns -> 2 */
