@@ -1,42 +1,45 @@
-.band {
-  background: var(--black);
-  padding: var(--press-y) var(--gutter-desktop);
-  display: flex;
-  align-items: center;
-  gap: var(--grid-gap);
-}
-
-/* Static — never part of the scrolling .track, so it's excluded from the
-   duplicated/aria-hidden marquee content and given its own real (non-hidden)
-   text, since it's meaningful, not decorative. */
+/* Centered, on the page background — the label used to live inside .band
+   as a flex sibling of the track; now it's static text above it. */
 .label {
-  flex-shrink: 0;
+  margin: 0 0 var(--label-gap);
+  text-align: center;
   font-family: var(--sans);
   font-size: var(--t-category);
   font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--white);
+  color: var(--muted);
 }
 
-/* Clips the marquee to its own box — see the comment in PressMarquee.tsx
-   for why this can't just be overflow:hidden on .band with .label and
-   .track as plain siblings. align-self: stretch is load-bearing at the
-   mobile/reduced-motion breakpoints below, where .band switches to
-   flex-direction: column: align-items: flex-start there would otherwise
-   size this wrapper to its content's own (huge, max-content) width
-   instead of the column's actual width, defeating overflow: hidden. */
+.band {
+  background: var(--black);
+  padding: var(--press-y) var(--gutter-desktop);
+}
+
+/* Clips the marquee to the band's width — this is what keeps the huge,
+   duplicated track from causing horizontal page overflow, not just a
+   visual nicety, so it stays even though the label it used to sit beside
+   is gone. Symmetric fade now that the track spans the band's full width
+   with nothing else fixed inside it: dissolves into the band's own
+   background at both edges, not just the one that used to abut the label.
+   --gutter-desktop is "about the width of one gutter", same fade width as
+   before. */
 .trackWrapper {
-  flex: 1 1 auto;
-  align-self: stretch;
-  min-width: 0;
   overflow: hidden;
-  /* Names dissolve into the label instead of hard-clipping against it —
-     only while the marquee is actually animating (removed under reduced
-     motion below, where names are wrapped and static, not sliding past
-     this edge). --gutter-desktop is "about the width of one gutter". */
-  mask-image: linear-gradient(to right, transparent, black var(--gutter-desktop));
-  -webkit-mask-image: linear-gradient(to right, transparent, black var(--gutter-desktop));
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black var(--gutter-desktop),
+    black calc(100% - var(--gutter-desktop)),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black var(--gutter-desktop),
+    black calc(100% - var(--gutter-desktop)),
+    transparent
+  );
 }
 
 .track {
@@ -82,26 +85,28 @@
 
 @media (max-width: 560px) {
   .band {
-    flex-direction: column;
-    align-items: flex-start;
     padding: var(--press-y) var(--gutter-mobile);
   }
 
   .trackWrapper {
-    mask-image: linear-gradient(to right, transparent, black var(--gutter-mobile));
-    -webkit-mask-image: linear-gradient(to right, transparent, black var(--gutter-mobile));
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black var(--gutter-mobile),
+      black calc(100% - var(--gutter-mobile)),
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black var(--gutter-mobile),
+      black calc(100% - var(--gutter-mobile)),
+      transparent
+    );
   }
 }
 
-/* Reduced motion turns .track into a static wrapped block (below) — at
-   that point it no longer reads as a single line next to the label, so
-   the label stacks above it here too, not just at the mobile breakpoint. */
 @media (prefers-reduced-motion: reduce) {
-  .band {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .trackWrapper {
     mask-image: none;
     -webkit-mask-image: none;
