@@ -1,13 +1,18 @@
 'use client'
 
 import MuxPlayer, { type MuxPlayerRefAttributes } from '@mux/mux-player-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 
 import styles from './VideoSpotlight.module.css'
 
 interface VideoSpotlightProps {
   playbackId: string
   label: string
+  // "W / H", the same format WorkTile.tsx already writes to --tile-ratio —
+  // passed straight through to a CSS custom property, no parsing needed. If
+  // the tile didn't have one, the video's own dimensions are read on
+  // loadedmetadata instead (see the effect below).
+  aspectRatio?: string
   onClose: () => void
 }
 
@@ -17,7 +22,7 @@ interface VideoSpotlightProps {
 // ancestor's overflow/stacking (the tile it's rendered next to has
 // overflow: hidden). Every way of closing (button, Esc, backdrop, browser
 // Back) funnels through requestClose so cleanup only happens once.
-export default function VideoSpotlight({ playbackId, label, onClose }: VideoSpotlightProps) {
+export default function VideoSpotlight({ playbackId, label, aspectRatio, onClose }: VideoSpotlightProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const playerRef = useRef<MuxPlayerRefAttributes>(null)
   const closingRef = useRef(false)
@@ -25,6 +30,7 @@ export default function VideoSpotlight({ playbackId, label, onClose }: VideoSpot
   const reducedMotionRef = useRef(false)
   const [visible, setVisible] = useState(false)
   const [ambientFailed, setAmbientFailed] = useState(false)
+  const [measuredRatio, setMeasuredRatio] = useState<string | null>(null)
 
   // The single path every way of closing funnels through. Cleanup (popping
   // the history entry, notifying the parent) happens here directly rather
@@ -114,18 +120,29 @@ export default function VideoSpotlight({ playbackId, label, onClose }: VideoSpot
   }, [requestClose])
 
   // Playback starts on mount, which runs inside the same user-gesture task
-  // as the tile click. Unmuted play() can still be rejected by the browser
-  // — fall back to muted with controls visible rather than a stuck player.
+  // as the tile click. mux-player attaches its actual HLS source slightly
+  // after this ref is available, so the first play() call sometimes races
+  // that and gets an AbortError ("interrupted by a new load request") —
+  // not a policy rejection, so it's retried once rather than treated as
+  // blocked. A genuine rejection (e.g. NotAllowedError) falls back to
+  // muted with controls visible rather than a stuck player. No `autoPlay`
+  // attribute on <MuxPlayer> — it drives its own internal play() attempt
+  // independently of (and racing) this one, and that internal attempt has
+  // no muted fallback, so relying on both was the source of the original
+  // muted-start bug.
   useEffect(() => {
     const player = playerRef.current
     if (!player) return
     let cancelled = false
 
-    ;(async () => {
+    const attemptPlay = async (retryAborted: boolean): Promise<void> => {
       try {
         await player.play()
-      } catch {
+      } catch (err) {
         if (cancelled) return
+        if (retryAborted && err instanceof DOMException && err.name === 'AbortError') {
+          return attemptPlay(false)
+        }
         player.muted = true
         try {
           await player.play()
@@ -133,12 +150,31 @@ export default function VideoSpotlight({ playbackId, label, onClose }: VideoSpot
           // Autoplay blocked even muted — controls remain for the user.
         }
       }
-    })()
+    }
+
+    attemptPlay(true)
 
     return () => {
       cancelled = true
     }
   }, [])
+
+  // Aspect ratio: the tile's own ratio, passed straight through to CSS
+  // (see .content's aspect-ratio/width in VideoSpotlight.module.css) — or,
+  // if the tile didn't have one, the video's real dimensions once known.
+  useEffect(() => {
+    if (aspectRatio) return
+    const player = playerRef.current
+    if (!player) return
+
+    const handleLoadedMetadata = () => {
+      if (player.videoWidth && player.videoHeight) {
+        setMeasuredRatio(`${player.videoWidth} / ${player.videoHeight}`)
+      }
+    }
+    player.addEventListener('loadedmetadata', handleLoadedMetadata)
+    return () => player.removeEventListener('loadedmetadata', handleLoadedMetadata)
+  }, [aspectRatio])
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDialogElement>) => {
     if (event.target === dialogRef.current) {
@@ -180,12 +216,14 @@ export default function VideoSpotlight({ playbackId, label, onClose }: VideoSpot
           <line x1="20" y1="4" x2="4" y2="20" />
         </svg>
       </button>
-      <div className={`${styles.content} ${visible ? styles.visible : ''}`}>
+      <div
+        className={`${styles.content} ${visible ? styles.visible : ''}`}
+        style={{ '--content-ratio': aspectRatio || measuredRatio || undefined } as CSSProperties}
+      >
         <MuxPlayer
           ref={playerRef}
           streamType="on-demand"
           playbackId={playbackId}
-          autoPlay
           playsInline
           className={styles.player}
         />

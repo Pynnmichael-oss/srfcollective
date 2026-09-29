@@ -55,7 +55,11 @@
   position: absolute;
   top: var(--gutter-desktop);
   right: var(--gutter-desktop);
-  z-index: 1;
+  /* Higher than .content (1) — .content used to also claim z-index: 1, and
+     since it comes later in DOM order, a tie went to it, letting the player
+     paint over the close button in their corner where the boxes overlapped.
+     A disjoint z-index makes the close button win regardless of size. */
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,11 +77,23 @@
   outline-offset: 2px;
 }
 
+/* Sized to the video's own shape, not the dialog's — width is the smaller
+   of "as wide as the viewport (minus gutters) allows" and "as wide as the
+   video would be if it were as tall as the viewport (minus gutters)
+   allows", which is exactly the largest box of this aspect-ratio that fits
+   both bounds; height then follows from aspect-ratio automatically. dvw/dvh
+   (not vw/vh) so a mobile browser's toolbar showing/hiding can't cause
+   overflow. --content-ratio is set inline per video; 16/9 is a fallback for
+   the brief window before either the tile's ratio or a measured one lands. */
 .content {
   position: relative;
   z-index: 1;
-  width: calc(100vw - var(--gutter-desktop) * 2);
-  height: calc(100vh - var(--gutter-desktop) * 2);
+  aspect-ratio: var(--content-ratio, 16 / 9);
+  width: min(
+    calc(100dvw - var(--gutter-desktop) * 2),
+    calc((100dvh - var(--gutter-desktop) * 2) * var(--content-ratio, 16 / 9))
+  );
+  height: auto;
   display: flex;
   transform: scale(var(--zoom-from));
   transition: transform var(--dur-reveal) var(--ease);
@@ -87,12 +103,12 @@
   transform: scale(1);
 }
 
-/* mux-player defaults the inner <video> to object-fit: contain, which is
-   exactly what's needed here — landscape videos fit the width, portrait
-   videos fill the available height, neither is cropped. */
 .player {
   width: 100%;
   height: 100%;
+  background: transparent;
+  --media-background-color: transparent;
+  --media-accent-color: var(--white);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -117,7 +133,9 @@
   }
 
   .content {
-    width: calc(100vw - var(--gutter-mobile) * 2);
-    height: calc(100vh - var(--gutter-mobile) * 2);
+    width: min(
+      calc(100dvw - var(--gutter-mobile) * 2),
+      calc((100dvh - var(--gutter-mobile) * 2) * var(--content-ratio, 16 / 9))
+    );
   }
 }

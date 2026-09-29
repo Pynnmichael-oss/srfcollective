@@ -44,6 +44,7 @@ export default function WorkTileVideo({ playbackId, poster, alt }: WorkTileVideo
   const spotlightOpenRef = useRef(false)
   const [shouldLoad, setShouldLoad] = useState(false)
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false)
+  const [spotlightRatio, setSpotlightRatio] = useState<string | undefined>(undefined)
   const [reducedMotion, setReducedMotion] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   )
@@ -127,6 +128,14 @@ export default function WorkTileVideo({ playbackId, poster, alt }: WorkTileVideo
 
   const openSpotlight = useCallback(() => {
     broadcastSpotlight(true)
+    // --tile-ratio is set on the ancestor .frame div (WorkTile.tsx) and
+    // inherits down to this button — read here (an event handler, not
+    // render) rather than passed as a prop through WorkTile.tsx.
+    setSpotlightRatio(
+      frameRef.current
+        ? getComputedStyle(frameRef.current).getPropertyValue('--tile-ratio').trim() || undefined
+        : undefined,
+    )
     setIsSpotlightOpen(true)
   }, [])
 
@@ -181,7 +190,12 @@ export default function WorkTileVideo({ playbackId, poster, alt }: WorkTileVideo
         </span>
       </button>
       {isSpotlightOpen && (
-        <VideoSpotlight playbackId={playbackId} label={alt} onClose={closeSpotlight} />
+        <VideoSpotlight
+          playbackId={playbackId}
+          label={alt}
+          aspectRatio={spotlightRatio}
+          onClose={closeSpotlight}
+        />
       )}
     </>
   )
