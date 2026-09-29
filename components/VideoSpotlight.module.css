@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--overlay);
+  background: var(--black);
   opacity: 0;
   transition: opacity var(--dur-hover) var(--ease);
 }
@@ -22,6 +22,33 @@
 
 .dialog::backdrop {
   background: transparent;
+}
+
+/* Full-viewport blurred still behind the player, filling the empty sides a
+   vertical video leaves on a wide screen. overflow: hidden clips the
+   oversized (--ambient-scale), blurred (--ambient-blur) image so the blur
+   never reveals a hard or transparent edge at the viewport boundary. */
+.ambient {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ambient::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--overlay);
+}
+
+.ambientImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(var(--ambient-scale));
+  filter: blur(var(--ambient-blur));
 }
 
 .close {
@@ -48,9 +75,16 @@
 
 .content {
   position: relative;
+  z-index: 1;
   width: calc(100vw - var(--gutter-desktop) * 2);
   height: calc(100vh - var(--gutter-desktop) * 2);
   display: flex;
+  transform: scale(var(--zoom-from));
+  transition: transform var(--dur-reveal) var(--ease);
+}
+
+.content.visible {
+  transform: scale(1);
 }
 
 /* mux-player defaults the inner <video> to object-fit: contain, which is
@@ -64,6 +98,11 @@
 @media (prefers-reduced-motion: reduce) {
   .dialog {
     transition: none;
+  }
+
+  .content {
+    transition: none;
+    transform: none;
   }
 }
 

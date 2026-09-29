@@ -24,6 +24,7 @@ export default function VideoSpotlight({ playbackId, label, onClose }: VideoSpot
   const previousOverflowRef = useRef('')
   const reducedMotionRef = useRef(false)
   const [visible, setVisible] = useState(false)
+  const [ambientFailed, setAmbientFailed] = useState(false)
 
   // The single path every way of closing funnels through. Cleanup (popping
   // the history entry, notifying the parent) happens here directly rather
@@ -152,6 +153,22 @@ export default function VideoSpotlight({ playbackId, label, onClose }: VideoSpot
       aria-label={`${label} spotlight`}
       onClick={handleBackdropClick}
     >
+      {/* Fills the empty sides a vertical video leaves on a wide screen.
+          Sits behind everything else in DOM order — no z-index needed to
+          stay under the close button and player. A failed thumbnail load
+          just leaves the plain --black + --overlay backdrop, never a
+          broken-image icon. */}
+      <div className={styles.ambient} aria-hidden="true">
+        {!ambientFailed && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`https://image.mux.com/${playbackId}/thumbnail.webp?width=640`}
+            alt=""
+            className={styles.ambientImage}
+            onError={() => setAmbientFailed(true)}
+          />
+        )}
+      </div>
       <button
         type="button"
         className={styles.close}
@@ -163,7 +180,7 @@ export default function VideoSpotlight({ playbackId, label, onClose }: VideoSpot
           <line x1="20" y1="4" x2="4" y2="20" />
         </svg>
       </button>
-      <div className={styles.content}>
+      <div className={`${styles.content} ${visible ? styles.visible : ''}`}>
         <MuxPlayer
           ref={playerRef}
           streamType="on-demand"

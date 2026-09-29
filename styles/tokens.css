@@ -7,7 +7,7 @@
   --muted: #757575; /* captions, categories, footer, supporting copy */
   --hairline: #e6e6e6; /* footer rule, dividers */
   --white: #ffffff; /* page background */
-  --overlay: rgba(0, 0, 0, 0.92); /* video spotlight backdrop */
+  --overlay: rgba(0, 0, 0, 0.55); /* video spotlight dimming layer, over the blurred ambient still */
   /* No accent color. Photography supplies all color. */
 
   /* Type families */
@@ -67,6 +67,9 @@
   --dur-hover: 300ms; /* nav underline */
   --dur-image: 600ms; /* tile image scale */
   --dur-reveal: 700ms; /* scroll fade-in */
+  --ambient-blur: 48px; /* video spotlight's blurred background still */
+  --ambient-scale: 1.2; /* oversizes the ambient still so blurring it never reveals an edge */
+  --zoom-from: 0.96; /* video spotlight player's entrance scale */
 
   /* Breakpoints */
   --bp-tablet: 900px; /* gallery 3 columns -> 2 */
