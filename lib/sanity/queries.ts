@@ -113,6 +113,8 @@ export const siteSettingsQuery = groq`
     activationsLede,
     footerLocation,
     instagramUrl,
+    ctaHeading,
+    contactEmail,
     seoTitle,
     seoDescription,
     ogImage

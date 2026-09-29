@@ -1,6 +1,7 @@
 import { stegaClean } from "next-sanity";
 
 import Activations from "@/components/Activations";
+import ClosingCta from "@/components/ClosingCta";
 import Hero from "@/components/Hero";
 import PressMarquee from "@/components/PressMarquee";
 import WorkGrid from "@/components/WorkGrid";
@@ -85,6 +86,14 @@ export default async function Home() {
         heading={siteSettings?.activationsHeading}
         lede={siteSettings?.activationsLede}
         partners={partners.map(cleanPartner)}
+      />
+      {/* contactEmail is both visible text and built into a mailto: href —
+          the same tension the instagramUrl comment above describes for the
+          footer — so it's cleaned like a URL rather than left as visible
+          copy, or stega's invisible characters would break the link. */}
+      <ClosingCta
+        ctaHeading={siteSettings?.ctaHeading}
+        contactEmail={siteSettings?.contactEmail && stegaClean(siteSettings.contactEmail)}
       />
     </>
   );

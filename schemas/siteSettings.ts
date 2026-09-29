@@ -92,6 +92,23 @@ export default defineType({
       group: 'general',
     }),
     defineField({
+      name: 'ctaHeading',
+      title: 'Closing heading',
+      type: 'string',
+      description:
+        "The large line near the bottom of your homepage, above your email. Example: Let's create something",
+      group: 'homepage',
+    }),
+    defineField({
+      name: 'contactEmail',
+      title: 'Contact email',
+      type: 'string',
+      description:
+        'Shown near the bottom of your homepage as a clickable email link. This does not change where contact form messages are sent.',
+      group: 'homepage',
+      validation: (rule) => rule.email(),
+    }),
+    defineField({
       name: 'featuredProjects',
       title: 'Homepage highlights',
       type: 'array',

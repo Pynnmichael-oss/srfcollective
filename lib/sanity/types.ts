@@ -144,6 +144,8 @@ export interface SiteSettings {
   activationsLede: string
   footerLocation: string
   instagramUrl: string
+  ctaHeading?: string
+  contactEmail?: string
   seoTitle?: string
   seoDescription?: string
   ogImage?: SanityImage

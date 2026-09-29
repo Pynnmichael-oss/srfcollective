@@ -1,0 +1,99 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--section-y-desktop) var(--gutter-desktop);
+}
+
+.section > * + * {
+  margin-top: var(--grid-gap);
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-section);
+  font-weight: 500;
+  color: var(--black);
+}
+
+/* Same grow-from-left underline as the nav links (see Nav.module.css's
+   .linkText::after) — the toggle lives on this inner span, not the <a>
+   itself, so the underline is sized to the email text, not the link's own
+   box. */
+.email {
+  font-family: var(--serif);
+  font-size: var(--t-tagline);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.emailText {
+  position: relative;
+  display: inline-block;
+}
+
+.emailText::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.15em;
+  width: 100%;
+  height: 0.08em;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-hover) var(--ease);
+}
+
+.email:hover .emailText::after,
+.email:focus-visible .emailText::after {
+  transform: scaleX(1);
+}
+
+/* Same black-fill button treatment as ContactForm's submit button —
+   border is a literal 1px, same convention used there (and in Services'
+   closing link), not part of the spacing scale. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: var(--grid-gap) var(--gutter-desktop);
+  border: 1px solid var(--black);
+  background: var(--black);
+  font-family: var(--sans);
+  font-size: var(--t-nav);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  transition:
+    background var(--dur-hover) var(--ease),
+    color var(--dur-hover) var(--ease);
+}
+
+.button:hover {
+  background: var(--white);
+  color: var(--black);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--black);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emailText::after,
+  .button {
+    transition: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .section {
+    padding: var(--section-y-mobile) var(--gutter-mobile);
+  }
+}
