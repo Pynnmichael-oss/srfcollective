@@ -7,7 +7,6 @@
   --muted: #757575; /* captions, categories, footer, supporting copy */
   --hairline: #e6e6e6; /* footer rule, dividers */
   --white: #ffffff; /* page background */
-  --surface: #f4f4f4; /* partners box background */
   --overlay: rgba(0, 0, 0, 0.92); /* video spotlight backdrop */
   /* No accent color. Photography supplies all color. */
 
@@ -62,8 +61,6 @@
   --hero-pad-y-desktop: 56px; /* hero: vertical section padding, top and bottom */
   --hero-pad-y-mobile: 40px;
   --label-gap: 16px; /* gap between a section label and the content directly below it */
-  --logo-h: 64px; /* partner logo height */
-  --logo-h-mobile: 44px;
 
   /* Motion */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
