@@ -28,34 +28,93 @@
   font-size: var(--t-body);
   font-weight: 300;
   line-height: 1.8;
-  color: var(--muted);
+  color: var(--ink);
 }
 
 .heading + .lede {
   margin-top: var(--grid-gap);
 }
 
+/* Full-bleed: breaks out of .section's own gutter padding with negative
+   margins equal to it, so the gray background runs edge-to-edge with the
+   viewport (there's no outer max-width container to fight — .section
+   itself already spans the full body width). Padding stays at
+   --gutter-desktop so the logos inside still line up with the gutter,
+   same as before the break-out. */
+.box {
+  align-self: stretch;
+  margin: 0 calc(-1 * var(--gutter-desktop));
+  background: var(--surface);
+  padding: var(--grid-gap) var(--gutter-desktop);
+}
+
+.copy ~ .box {
+  margin-top: var(--section-y-mobile);
+}
+
 .partners {
+  /* space-evenly distributes logos across the box's full width instead of
+     clustering them in the center. Horizontal gap is a floor, not the
+     only source of spacing — deliberately much wider than --grid-gap
+     (22px), that token is tuned for the tight masonry grid, not this
+     editorial "as featured in" band, where each logo should read
+     individually. Plain values, not tokens, matching the same carve-out
+     already made for .logo's height below (single use site, not part of
+     a scale). Vertical rhythm between wrapped rows is untouched
+     (var(--grid-gap)), only the horizontal spacing within a row widens. */
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  column-gap: var(--gutter-desktop);
+  justify-content: space-evenly;
+  column-gap: 72px;
   row-gap: var(--grid-gap);
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.copy ~ .partners {
-  margin-top: var(--section-y-mobile);
+/* --bp-tablet / --bp-mobile as literal px: media queries can't consume
+   CSS custom properties (see Nav.module.css's own note on this). Values
+   step down rather than scale linearly — checked by eye at each width,
+   not derived from the 72px desktop figure. */
+@media (max-width: 900px) {
+  .partners {
+    column-gap: 48px;
+  }
 }
 
 .partner {
   font-family: var(--serif);
   font-size: var(--t-partner);
   font-weight: 500;
-  color: var(--black);
+  color: var(--ink);
+}
+
+.logo {
+  /* .partners' align-items: center already keeps logos (and any text
+     fallback) vertically centered regardless of each one's own aspect
+     ratio. mix-blend-mode: multiply makes an opaque white background
+     baked into a logo's own source image disappear against --surface
+     (white * anything = anything under multiply), without touching the
+     logo's real artwork. */
+  display: block;
+  height: var(--logo-h);
+  width: auto;
+  object-fit: contain;
+  filter: grayscale(100%);
+  mix-blend-mode: multiply;
+  transition: filter var(--dur-hover) var(--ease);
+}
+
+.logo:hover,
+.logo:focus-visible {
+  filter: grayscale(0%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo {
+    transition: none;
+  }
 }
 
 @media (max-width: 560px) {
@@ -63,7 +122,16 @@
     padding: var(--section-y-mobile) var(--gutter-mobile);
   }
 
+  .box {
+    margin: 0 calc(-1 * var(--gutter-mobile));
+    padding: var(--grid-gap) var(--gutter-mobile);
+  }
+
   .partners {
-    column-gap: var(--gutter-mobile);
+    column-gap: 28px;
+  }
+
+  .logo {
+    height: var(--logo-h-mobile);
   }
 }

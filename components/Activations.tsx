@@ -1,3 +1,4 @@
+import { urlFor } from '@/lib/sanity/image'
 import type { Partner } from '@/lib/sanity/types'
 
 import styles from './Activations.module.css'
@@ -9,13 +10,8 @@ interface ActivationsProps {
 }
 
 export default function Activations({ heading, lede, partners }: ActivationsProps) {
-  // Logos stay in Sanity for possible future use — just not rendered, and a
-  // partner without a name (defensive; the schema requires one) has nothing
-  // to typeset, so it's skipped rather than left as an empty <li>.
-  const namedPartners = partners.filter((partner) => partner.name)
-
   const hasCopy = Boolean(heading || lede)
-  const hasPartners = namedPartners.length > 0
+  const hasPartners = partners.length > 0
 
   // heading/lede and partners are independent data sources — only hide
   // what's actually missing, never collapse the whole section for one.
@@ -32,13 +28,41 @@ export default function Activations({ heading, lede, partners }: ActivationsProp
         </div>
       )}
       {hasPartners && (
-        <ul className={styles.partners}>
-          {namedPartners.map((partner) => (
-            <li key={partner._id} className={styles.partner}>
-              {partner.name}
-            </li>
-          ))}
-        </ul>
+        <div className={styles.box}>
+          <ul className={styles.partners}>
+            {partners.map((partner) => (
+              <li key={partner._id} className={styles.partner}>
+                {partner.logo?.asset?._ref ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    // Fetched height follows --logo-h (64px, the larger of
+                    // the two breakpoint sizes — CSS only ever scales this
+                    // down for --logo-h-mobile, never up) — keep in sync
+                    // with tokens.css, or the <img> upscales a lower-res
+                    // source and looks soft. Deliberately height-only:
+                    // @sanity/image-url auto-crops to a center rect
+                    // whenever both width() and height() are given (to
+                    // force that exact box), which silently mangled
+                    // square/vertical logos like LDV Properties' (its
+                    // mark+wordmark+icon lockup got center-cropped to a
+                    // thin illegible sliver). height() alone preserves
+                    // each logo's real aspect ratio with no cropping.
+                    src={urlFor(partner.logo).height(64).fit('max').auto('format').url()}
+                    alt={partner.name}
+                    tabIndex={0}
+                    className={styles.logo}
+                  />
+                ) : (
+                  // Text fallback — used today for any partner without a logo,
+                  // and kept here (not deleted) as the reversion path: to go
+                  // back to all-text partner names, replace the ternary above
+                  // with just `partner.name`.
+                  partner.name
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </section>
   )
