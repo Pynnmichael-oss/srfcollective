@@ -2,6 +2,8 @@ import { ImagesIcon } from '@sanity/icons'
 import { orderRankField } from '@sanity/orderable-document-list'
 import { defineField, defineType } from 'sanity'
 
+import PreviewStartInput from './components/PreviewStartInput'
+
 export default defineType({
   name: 'project',
   title: 'Project',
@@ -55,6 +57,16 @@ export default defineType({
           }
           return true
         }),
+    }),
+    defineField({
+      name: 'previewStart',
+      title: 'Preview start',
+      type: 'number',
+      description:
+        'Where your 10-second preview begins in the grid. Use the player below to pick the moment. Leave empty to use the first 10 seconds. Visitors who click still see the full video.',
+      hidden: ({ parent }) => parent?.mediaType !== 'video',
+      validation: (rule) => rule.min(0),
+      components: { input: PreviewStartInput },
     }),
     defineField({
       name: 'client',

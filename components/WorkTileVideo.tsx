@@ -1,7 +1,9 @@
 'use client'
 
 import MuxPlayer, { type MuxPlayerRefAttributes } from '@mux/mux-player-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+import { clipWindow } from '@/lib/video'
 
 import sharedStyles from './WorkTile.module.css'
 import styles from './WorkTileVideo.module.css'
@@ -9,7 +11,11 @@ import VideoSpotlight from './VideoSpotlight'
 
 interface WorkTileVideoProps {
   playbackId: string
-  poster: string
+  // Rosie's chosen grid-preview start, and the asset's real length — both
+  // needed to compute the clip window (see lib/video.ts). The spotlight
+  // below always gets the plain playbackId, full video from 0:00.
+  previewStart?: number
+  duration?: number
   alt: string
 }
 
@@ -37,7 +43,12 @@ function broadcastSpotlight(open: boolean) {
 // spotlight is open.
 // prefers-reduced-motion skips the player entirely (poster only) — existing
 // behavior, unchanged.
-export default function WorkTileVideo({ playbackId, poster, alt }: WorkTileVideoProps) {
+export default function WorkTileVideo({
+  playbackId,
+  previewStart,
+  duration,
+  alt,
+}: WorkTileVideoProps) {
   const frameRef = useRef<HTMLButtonElement>(null)
   const playerRef = useRef<MuxPlayerRefAttributes>(null)
   const inViewRef = useRef(false)
@@ -145,6 +156,17 @@ export default function WorkTileVideo({ playbackId, poster, alt }: WorkTileVideo
     frameRef.current?.focus()
   }, [])
 
+  // null when the video's too short to need clipping (loop the whole
+  // thing) — same rule the Studio picker uses, so they always agree.
+  const previewWindow = useMemo(
+    () => (typeof duration === 'number' ? clipWindow(previewStart, duration) : null),
+    [previewStart, duration],
+  )
+  // The still matches whatever the loop actually starts on.
+  const poster = `https://image.mux.com/${playbackId}/thumbnail.webp?width=1200${
+    previewWindow ? `&time=${previewWindow.start}` : ''
+  }`
+
   // alt already carries the best available name — the project's client name
   // in the common case, or a custom description when one's set (see
   // WorkTile.tsx) — so the trigger's label is built from it directly rather
@@ -168,6 +190,8 @@ export default function WorkTileVideo({ playbackId, poster, alt }: WorkTileVideo
             ref={playerRef}
             streamType="on-demand"
             playbackId={playbackId}
+            assetStartTime={previewWindow?.start}
+            assetEndTime={previewWindow?.end}
             poster={poster}
             maxResolution="720p"
             muted

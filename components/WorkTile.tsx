@@ -43,7 +43,6 @@ export default function WorkTile({ project, priority = false }: WorkTileProps) {
       return null
     }
 
-    const poster = `https://image.mux.com/${playbackId}/thumbnail.webp?width=1200`
     const alt = project.alt || project.client || 'Project video'
     const hasCaption = Boolean(project.client || project.category)
 
@@ -53,7 +52,12 @@ export default function WorkTile({ project, priority = false }: WorkTileProps) {
           className={styles.frame}
           style={{ '--tile-ratio': `${ratio.width} / ${ratio.height}` } as CSSProperties}
         >
-          <WorkTileVideo playbackId={playbackId} poster={poster} alt={alt} />
+          <WorkTileVideo
+            playbackId={playbackId}
+            previewStart={project.previewStart}
+            duration={project.video?.asset?.duration ?? undefined}
+            alt={alt}
+          />
         </div>
         {hasCaption && (
           <figcaption className={styles.caption}>

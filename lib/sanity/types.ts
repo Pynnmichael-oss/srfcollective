@@ -23,6 +23,9 @@ export interface MuxVideo {
     status?: string
     // Mux's own "W:H" string, e.g. "9:16" — parsed via parseMuxRatio().
     ratio?: string | null
+    // Seconds — used with previewStart to compute the grid's clip window
+    // (see lib/video.ts).
+    duration?: number | null
   } | null
 }
 
@@ -38,6 +41,9 @@ export interface Project {
   image?: SanityImage
   video?: MuxVideo | null
   slug?: Slug
+  // Seconds into the video where the grid's 10-second preview starts.
+  // Missing/undefined means "from 0:00" (see lib/video.ts's clipWindow()).
+  previewStart?: number
   client: string
   category: string
   alt?: string

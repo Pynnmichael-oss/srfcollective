@@ -15,9 +15,11 @@ const projectProjection = groq`
     asset->{
       playbackId,
       status,
-      "ratio": data.aspect_ratio
+      "ratio": data.aspect_ratio,
+      "duration": data.duration
     }
   },
+  previewStart,
   client,
   category,
   alt
