@@ -1,7 +1,9 @@
 import { ImagesIcon } from '@sanity/icons'
 import { orderRankField } from '@sanity/orderable-document-list'
+import { createElement } from 'react'
 import { defineField, defineType } from 'sanity'
 
+import MediaItemThumbnail from './components/MediaItemThumbnail'
 import PreviewStartInput from './components/PreviewStartInput'
 
 export default defineType({
@@ -11,61 +13,84 @@ export default defineType({
   icon: ImagesIcon,
   fields: [
     defineField({
+      name: 'date',
+      title: 'Date',
+      type: 'date',
+      description:
+        'Used to sort your Work page, newest first. Usually when the work was made or published.',
+      initialValue: () => new Date().toISOString().slice(0, 10),
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'categories',
+      title: 'Categories',
+      type: 'array',
+      of: [{ type: 'string' }],
+      description: 'Tick every type of work this project includes.',
+      options: {
+        list: [
+          { title: 'Social', value: 'Social' },
+          { title: 'Brand', value: 'Brand' },
+          { title: 'Content', value: 'Content' },
+          { title: 'Creative Direction', value: 'Creative Direction' },
+          { title: 'Events', value: 'Events' },
+          { title: 'Weddings', value: 'Weddings' },
+        ],
+        layout: 'grid',
+      },
+      validation: (rule) => rule.min(1),
+    }),
+    defineField({
+      name: 'media',
+      title: 'Media',
+      type: 'array',
+      of: [{ type: 'mediaItem' }],
+      description:
+        'Add every photo and video for this client or campaign. You can drag several photos in at once. The first item is the cover: drag your best piece to the top.',
+      validation: (rule) => rule.min(1),
+    }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 3,
+      description:
+        'A line or two about the work, e.g. "Social content and creative direction for the summer launch."',
+    }),
+    // Superseded by `media` (an array of mediaItem) — kept hidden, with
+    // their data in place, so the live site (which still reads these) keeps
+    // working until a later task switches the front end over to `media`.
+    defineField({
       name: 'mediaType',
-      title: 'Media type',
+      title: 'Media type (old, superseded by Media)',
       type: 'string',
-      description: 'Choose whether this project shows a photo or a video clip in the grid.',
+      hidden: true,
       options: {
         list: [
           { title: 'Image', value: 'image' },
           { title: 'Video', value: 'video' },
         ],
-        layout: 'radio',
       },
       initialValue: 'image',
-      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'image',
-      title: 'Image',
+      title: 'Image (old, superseded by Media)',
       type: 'image',
-      description:
-        'The main photo for this project. Please use a photo that is at least 1600px on the long edge, under 2MB, and saved as a JPEG. Upload it in whatever shape it naturally is — portrait or landscape both work, and the site shows it in its original shape, so there’s no need to crop it.',
       options: { hotspot: true },
-      hidden: ({ parent }) => parent?.mediaType !== 'image',
-      validation: (rule) =>
-        rule.custom((value, context) => {
-          const parent = context.parent as { mediaType?: string } | undefined
-          if (parent?.mediaType === 'image' && !value) {
-            return 'Required when media type is Image'
-          }
-          return true
-        }),
+      hidden: true,
     }),
     defineField({
       name: 'video',
-      title: 'Video',
+      title: 'Video (old, superseded by Media)',
       type: 'mux.video',
-      description:
-        'Upload your video exactly as exported. Portrait or landscape both work — the site shows it in its original shape, so there’s no need to crop it. In the grid, it plays automatically as a silent, looping preview — there’s no expanded or full-sound playback on the site yet. If an upload fails with “Something went wrong,” message Michael — it’s usually an account limit, not your file.',
-      hidden: ({ parent }) => parent?.mediaType !== 'video',
-      validation: (rule) =>
-        rule.custom((value, context) => {
-          const parent = context.parent as { mediaType?: string } | undefined
-          if (parent?.mediaType === 'video' && !value) {
-            return 'Required when media type is Video'
-          }
-          return true
-        }),
+      hidden: true,
     }),
     defineField({
       name: 'previewStart',
-      title: 'Preview start',
+      title: 'Preview start (old, superseded by Media)',
       type: 'number',
-      description:
-        'Where your 10-second preview begins in the grid. Use the player below to pick the moment. Leave empty to use the first 10 seconds. Visitors who click still see the full video.',
-      hidden: ({ parent }) => parent?.mediaType !== 'video',
-      validation: (rule) => rule.min(0),
+      hidden: true,
       components: { input: PreviewStartInput },
     }),
     defineField({
@@ -99,18 +124,15 @@ export default defineType({
     }),
     defineField({
       name: 'category',
-      title: 'Category',
+      title: 'Category (old, superseded by Categories)',
       type: 'string',
-      description:
-        'The type of work this project is, e.g. "Content", "Creative direction", or "Social".',
-      validation: (rule) => rule.required(),
+      hidden: true,
     }),
     defineField({
       name: 'alt',
-      title: 'Alt text',
+      title: 'Alt text (old, superseded by Media)',
       type: 'string',
-      description:
-        'Optional. A short, plain description of what is in the photo — helps with accessibility and search engines. Leave blank if you are not sure what to put.',
+      hidden: true,
     }),
     // Superseded — every tile now renders at its asset's real aspect ratio
     // automatically (see components/WorkTile.tsx), so this hint is no
@@ -127,8 +149,40 @@ export default defineType({
   preview: {
     select: {
       title: 'client',
-      subtitle: 'category',
-      media: 'image',
+      categories: 'categories',
+      coverMediaType: 'media.0.mediaType',
+      coverImage: 'media.0.image',
+      coverImageAssetRef: 'media.0.image.asset._ref',
+      coverVideoAssetRef: 'media.0.video.asset._ref',
+      coverPreviewStart: 'media.0.previewStart',
+      oldImage: 'image',
+    },
+    prepare({
+      title,
+      categories,
+      coverMediaType,
+      coverImage,
+      coverImageAssetRef,
+      coverVideoAssetRef,
+      coverPreviewStart,
+      oldImage,
+    }) {
+      return {
+        title,
+        subtitle: Array.isArray(categories) ? categories.join(', ') : undefined,
+        // media[0] is the cover once a project has been migrated onto the
+        // new array; before that (or if it's an image cover with nothing
+        // dereference-able yet), fall back to the old single `image` field
+        // so every project still shows a thumbnail in the list.
+        media: coverMediaType
+          ? createElement(MediaItemThumbnail, {
+              mediaType: coverMediaType,
+              imageAssetRef: coverImageAssetRef,
+              videoAssetRef: coverVideoAssetRef,
+              previewStart: coverPreviewStart,
+            })
+          : coverImage || oldImage,
+      }
     },
   },
 })

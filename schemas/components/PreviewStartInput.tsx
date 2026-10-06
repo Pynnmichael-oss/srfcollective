@@ -21,8 +21,13 @@ function formatTime(seconds: number) {
 // — not dereferenced in the form value, so playbackId/duration are fetched
 // here directly rather than threaded in as props.
 export default function PreviewStartInput(props: NumberInputProps) {
-  const { value, onChange, readOnly } = props
-  const videoField = useFormValue(['video']) as { asset?: { _ref?: string } } | undefined
+  const { value, onChange, readOnly, path } = props
+  // Resolve `video` as a sibling of this field, not a document-root field —
+  // path is absolute from the document root, so this works whether
+  // previewStart sits at the document root (project.previewStart) or inside
+  // an array item (project.media[_key==...].previewStart).
+  const siblingPath = path.slice(0, -1).concat('video')
+  const videoField = useFormValue(siblingPath) as { asset?: { _ref?: string } } | undefined
   const assetRef = videoField?.asset?._ref
   const client = useClient({ apiVersion: '2024-01-01' })
   const playerRef = useRef<MuxPlayerRefAttributes>(null)

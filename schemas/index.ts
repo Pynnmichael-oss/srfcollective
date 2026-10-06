@@ -1,6 +1,7 @@
 import type { SchemaTypeDefinition } from 'sanity'
 
 import aboutSettings from './aboutSettings'
+import mediaItem from './objects/mediaItem'
 import partner from './partner'
 import pressLogo from './pressLogo'
 import project from './project'
@@ -13,6 +14,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   aboutSettings,
   servicesPage,
   project,
+  mediaItem,
   pressLogo,
   partner,
   service,
