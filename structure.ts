@@ -10,11 +10,13 @@ export const structure: StructureResolver = (S, context) =>
   S.list()
     .title('SRF Collective')
     .items([
+      orderableDocumentListDeskItem({ type: 'project', title: 'Projects', S, context }),
+      S.divider(),
       S.listItem()
-        .title('Site Settings')
+        .title('Homepage & Site Settings')
         .icon(CogIcon)
         .child(
-          S.document().schemaType('siteSettings').documentId('siteSettings').title('Site Settings'),
+          S.document().schemaType('siteSettings').documentId('siteSettings').title('Homepage & Site Settings'),
         ),
       S.listItem()
         .title('About Page')
@@ -22,10 +24,6 @@ export const structure: StructureResolver = (S, context) =>
         .child(
           S.document().schemaType('aboutSettings').documentId('aboutSettings').title('About Page'),
         ),
-      S.divider(),
-      orderableDocumentListDeskItem({ type: 'project', title: 'Projects', S, context }),
-      orderableDocumentListDeskItem({ type: 'pressLogo', title: 'Press Logos', S, context }),
-      orderableDocumentListDeskItem({ type: 'partner', title: 'Partners', S, context }),
       S.listItem()
         .title('Services Page')
         .icon(ThListIcon)
@@ -36,4 +34,7 @@ export const structure: StructureResolver = (S, context) =>
             .title('Services Page'),
         ),
       orderableDocumentListDeskItem({ type: 'service', title: 'Services', S, context }),
+      S.divider(),
+      orderableDocumentListDeskItem({ type: 'pressLogo', title: 'Press', S, context }),
+      orderableDocumentListDeskItem({ type: 'partner', title: 'Partners', S, context }),
     ])

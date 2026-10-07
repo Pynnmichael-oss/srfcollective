@@ -3,8 +3,8 @@ import { orderRankField } from '@sanity/orderable-document-list'
 import { createElement } from 'react'
 import { defineField, defineType } from 'sanity'
 
-import MediaItemThumbnail from './components/MediaItemThumbnail'
 import PreviewStartInput from './components/PreviewStartInput'
+import { muxThumbnailUrl } from './lib/muxThumbnail'
 
 export default defineType({
   name: 'project',
@@ -26,7 +26,8 @@ export default defineType({
       title: 'Categories',
       type: 'array',
       of: [{ type: 'string' }],
-      description: 'Tick every type of work this project includes.',
+      description:
+        'Tick every type of work this project includes. These are fixed so the Work page can group projects consistently.',
       options: {
         list: [
           { title: 'Social', value: 'Social' },
@@ -38,7 +39,7 @@ export default defineType({
         ],
         layout: 'grid',
       },
-      validation: (rule) => rule.min(1),
+      validation: (rule) => rule.min(1).error('Pick at least one type of work.'),
     }),
     defineField({
       name: 'media',
@@ -47,7 +48,7 @@ export default defineType({
       of: [{ type: 'mediaItem' }],
       description:
         'Add every photo and video for this client or campaign. You can drag several photos in at once. The first item is the cover: drag your best piece to the top.',
-      validation: (rule) => rule.min(1),
+      validation: (rule) => rule.min(1).error('Add at least one photo or video.'),
     }),
     defineField({
       name: 'description',
@@ -105,7 +106,7 @@ export default defineType({
       title: 'Slug',
       type: 'slug',
       description:
-        'A web-friendly, unique identifier for this project, generated from the client name. Not used on the site yet — this is groundwork for future individual project pages.',
+        'The web address for this client\'s page. Click Generate after entering the client name; you shouldn\'t need to change it.',
       options: { source: 'client', maxLength: 96 },
       validation: (rule) =>
         rule.required().custom(async (slug, context) => {
@@ -152,36 +153,41 @@ export default defineType({
       categories: 'categories',
       coverMediaType: 'media.0.mediaType',
       coverImage: 'media.0.image',
-      coverImageAssetRef: 'media.0.image.asset._ref',
-      coverVideoAssetRef: 'media.0.video.asset._ref',
+      coverVideoPlaybackId: 'media.0.video.asset.playbackId',
       coverPreviewStart: 'media.0.previewStart',
+      // Fallback for any project that predates the `media` array (none
+      // today, post-migration, but expand/contract leaves the old fields
+      // live) — same dereference approach, no async lookup either way.
       oldImage: 'image',
+      oldVideoPlaybackId: 'video.asset.playbackId',
+      oldPreviewStart: 'previewStart',
     },
     prepare({
       title,
       categories,
       coverMediaType,
       coverImage,
-      coverImageAssetRef,
-      coverVideoAssetRef,
+      coverVideoPlaybackId,
       coverPreviewStart,
       oldImage,
+      oldVideoPlaybackId,
+      oldPreviewStart,
     }) {
+      const videoPlaybackId = coverMediaType ? coverVideoPlaybackId : oldVideoPlaybackId
+      const previewStart = coverMediaType ? coverPreviewStart : oldPreviewStart
+      const image = coverMediaType ? coverImage : oldImage
+      const isVideo = coverMediaType ? coverMediaType === 'video' : Boolean(videoPlaybackId)
+
       return {
         title,
         subtitle: Array.isArray(categories) ? categories.join(', ') : undefined,
-        // media[0] is the cover once a project has been migrated onto the
-        // new array; before that (or if it's an image cover with nothing
-        // dereference-able yet), fall back to the old single `image` field
-        // so every project still shows a thumbnail in the list.
-        media: coverMediaType
-          ? createElement(MediaItemThumbnail, {
-              mediaType: coverMediaType,
-              imageAssetRef: coverImageAssetRef,
-              videoAssetRef: coverVideoAssetRef,
-              previewStart: coverPreviewStart,
-            })
-          : coverImage || oldImage,
+        media:
+          isVideo && videoPlaybackId
+            ? createElement('img', {
+                src: muxThumbnailUrl(videoPlaybackId, previewStart),
+                alt: '',
+              })
+            : image,
       }
     },
   },

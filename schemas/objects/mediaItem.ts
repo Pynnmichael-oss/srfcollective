@@ -1,8 +1,8 @@
 import { createElement } from 'react'
 import { defineField, defineType } from 'sanity'
 
-import MediaItemThumbnail from '../components/MediaItemThumbnail'
 import PreviewStartInput from '../components/PreviewStartInput'
+import { muxThumbnailUrl } from '../lib/muxThumbnail'
 
 // One photo or video inside a project's `media` array. Mirrors the shape of
 // the old single-media fields on `project` (mediaType/image/video/
@@ -17,6 +17,7 @@ export default defineType({
       name: 'mediaType',
       title: 'Media type',
       type: 'string',
+      description: 'Choose Photo or Video, then upload.',
       options: {
         list: [
           { title: 'Photo', value: 'image' },
@@ -24,7 +25,6 @@ export default defineType({
         ],
         layout: 'radio',
       },
-      initialValue: 'image',
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -67,7 +67,7 @@ export default defineType({
       description:
         'Where this video’s 10-second preview begins in the grid. Use the player below to pick the moment. Leave empty to use the first 10 seconds. Visitors who click still see the full video.',
       hidden: ({ parent }) => parent?.mediaType !== 'video',
-      validation: (rule) => rule.min(0),
+      validation: (rule) => rule.min(0).error('Must be 0 seconds or later.'),
       components: { input: PreviewStartInput },
     }),
     defineField({
@@ -81,21 +81,27 @@ export default defineType({
   preview: {
     select: {
       mediaType: 'mediaType',
-      imageAssetRef: 'image.asset._ref',
-      videoAssetRef: 'video.asset._ref',
+      image: 'image',
+      videoPlaybackId: 'video.asset.playbackId',
       previewStart: 'previewStart',
       alt: 'alt',
     },
-    prepare({ mediaType, imageAssetRef, videoAssetRef, previewStart, alt }) {
+    prepare({ mediaType, image, videoPlaybackId, previewStart, alt }) {
       return {
         title: alt || (mediaType === 'video' ? 'Video' : 'Photo'),
         subtitle: mediaType === 'video' ? 'Video' : 'Photo',
-        media: createElement(MediaItemThumbnail, {
-          mediaType,
-          imageAssetRef,
-          videoAssetRef,
-          previewStart,
-        }),
+        // Image: pass the asset value straight through — Sanity's own
+        // preview machinery renders it, same as pressLogo/partner's `logo`.
+        // Video: Mux has no Sanity-native preview, so build the thumbnail
+        // URL from the dereferenced playbackId (resolved by `select` above,
+        // synchronously available here — no fetch, no loading state).
+        media:
+          mediaType === 'video' && videoPlaybackId
+            ? createElement('img', {
+                src: muxThumbnailUrl(videoPlaybackId, previewStart),
+                alt: '',
+              })
+            : image,
       }
     },
   },

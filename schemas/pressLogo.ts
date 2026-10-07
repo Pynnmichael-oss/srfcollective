@@ -15,12 +15,14 @@ export default defineType({
       description: 'The name of the press outlet or publication, e.g. "Vogue" or "The New York Times".',
       validation: (rule) => rule.required(),
     }),
+    // Unused — all press logos currently render as text, and no one has
+    // uploaded one through this field. Hidden rather than removed: it still
+    // works if that changes later, and no data is lost by hiding it.
     defineField({
       name: 'logo',
       title: 'Logo',
       type: 'image',
-      description:
-        "Optional. Upload the outlet's logo here. If you leave this blank, the site will just show the name as text instead.",
+      hidden: true,
     }),
     orderRankField({ type: 'pressLogo' }),
   ],

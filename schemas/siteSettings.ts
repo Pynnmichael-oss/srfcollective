@@ -9,8 +9,9 @@ export default defineType({
   // This document is a singleton — see structure.ts, where it's the only way
   // to open it (there is no "create new" option anywhere in the Studio).
   groups: [
-    { name: 'general', title: 'General', default: true },
-    { name: 'homepage', title: 'Homepage' },
+    { name: 'homepage', title: 'Homepage', default: true },
+    { name: 'contact', title: 'Contact & footer' },
+    { name: 'seo', title: 'SEO & sharing' },
   ],
   fields: [
     defineField({
@@ -18,7 +19,7 @@ export default defineType({
       title: 'Hero headline',
       type: 'string',
       description: 'The big headline text at the top of the homepage.',
-      group: 'general',
+      group: 'homepage',
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -26,7 +27,7 @@ export default defineType({
       title: 'Hero subline',
       type: 'text',
       description: 'The supporting line under the headline — a sentence or two.',
-      group: 'general',
+      group: 'homepage',
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -34,7 +35,7 @@ export default defineType({
       title: 'Activations heading',
       type: 'string',
       description: 'The heading for the "Activations" section of the homepage.',
-      group: 'general',
+      group: 'homepage',
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -42,7 +43,7 @@ export default defineType({
       title: 'Activations lede',
       type: 'text',
       description: 'The short intro paragraph that goes under the Activations heading.',
-      group: 'general',
+      group: 'homepage',
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -51,7 +52,7 @@ export default defineType({
       type: 'string',
       description:
         'The location and founder credit shown in the footer, e.g. "New York — Est. by Rosie Ferrell".',
-      group: 'general',
+      group: 'contact',
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -59,7 +60,7 @@ export default defineType({
       title: 'Instagram URL',
       type: 'url',
       description: 'The link to the Instagram profile, shown in the footer.',
-      group: 'general',
+      group: 'contact',
       validation: (rule) =>
         rule
           .required()
@@ -71,25 +72,25 @@ export default defineType({
       title: 'SEO title',
       type: 'string',
       description:
-        'Optional. The title shown in search engines and browser tabs. If left blank, the site name is used instead.',
-      group: 'general',
+        'Optional. What shows as the page title in a Google search result and in the browser tab. Leave blank to just use your site name.',
+      group: 'seo',
     }),
     defineField({
       name: 'seoDescription',
       title: 'SEO description',
       type: 'text',
       description:
-        'Optional. A one or two sentence summary shown under the title in search engine results.',
-      group: 'general',
+        'Optional. The sentence or two that shows under your title in Google search results.',
+      group: 'seo',
     }),
     defineField({
       name: 'ogImage',
       title: 'Social share image',
       type: 'image',
       description:
-        'Optional. The image shown when the site is shared on social media (Facebook, X, etc). If left blank, a default image is used.',
+        'Optional. The picture shown when someone shares your site link on Facebook, X, etc. Landscape, at least 1200px wide. Leave blank to use a default image.',
       options: { hotspot: true },
-      group: 'general',
+      group: 'seo',
     }),
     defineField({
       name: 'ctaHeading',
@@ -105,7 +106,7 @@ export default defineType({
       type: 'string',
       description:
         'Shown near the bottom of your homepage as a clickable email link. This does not change where contact form messages are sent.',
-      group: 'homepage',
+      group: 'contact',
       validation: (rule) => rule.email(),
     }),
     defineField({
