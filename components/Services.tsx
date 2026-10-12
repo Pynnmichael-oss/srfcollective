@@ -62,7 +62,9 @@ export default function Services({ page, services }: ServicesProps) {
                 {/* Slot always renders (even without an image) so every
                     row's grid keeps the same 4-column track — only the
                     <img> itself is conditional, so there's never a broken
-                    or empty image element. */}
+                    or empty image element. Always visible (not a
+                    hover-reveal), so it needs a real alt rather than being
+                    decorative. */}
                 <span className={styles.imageSlot}>
                   {item.hoverImage && (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -71,19 +73,18 @@ export default function Services({ page, services }: ServicesProps) {
                       // to @sanity/image-url auto-crops to the hotspot rect
                       // (see Activations.module.css for the same mechanism
                       // used deliberately here, unlike the bare-image
-                      // convention used for gallery tiles). 180x220 and
-                      // 360x440 mirror --service-image-w/--service-image-h
+                      // convention used for gallery tiles). 140x104 and
+                      // 280x208 mirror --service-image-w/--service-image-h
                       // exactly — JS numeric literals can't reference CSS
                       // custom properties, so keep these two in sync by hand.
-                      src={hoverImageUrl(item.hoverImage).width(180).height(220).fit('crop').auto('format').url()}
+                      src={hoverImageUrl(item.hoverImage).width(140).height(104).fit('crop').auto('format').url()}
                       srcSet={[
-                        `${hoverImageUrl(item.hoverImage).width(180).height(220).fit('crop').auto('format').url()} 180w`,
-                        `${hoverImageUrl(item.hoverImage).width(360).height(440).fit('crop').auto('format').url()} 360w`,
+                        `${hoverImageUrl(item.hoverImage).width(140).height(104).fit('crop').auto('format').url()} 140w`,
+                        `${hoverImageUrl(item.hoverImage).width(280).height(208).fit('crop').auto('format').url()} 280w`,
                       ].join(', ')}
-                      sizes="180px"
+                      sizes="(max-width: 899px) 100vw, 140px"
                       loading="lazy"
-                      alt=""
-                      aria-hidden="true"
+                      alt={item.title ? `${item.title} — SRF Collective` : ''}
                       className={styles.image}
                     />
                   )}

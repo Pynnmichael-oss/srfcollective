@@ -42,9 +42,6 @@
 }
 
 .row {
-  position: relative; /* containing block for the absolutely positioned
-                          image, and a stacking context for the hover
-                          z-index below */
   border-bottom: 1px solid var(--hairline);
 }
 
@@ -95,34 +92,34 @@
   color: var(--ink);
 }
 
-/* Image slot always renders so every row keeps the same grid track (see
-   Services.tsx); height: 0 lets its absolutely positioned <img> center on
-   the row's own vertical midpoint via top: 50%, then bleed past it via
-   translate(-50%, -50%) — this is how the image overlaps the hairlines
-   above and below the row. --service-image-h is sized to overshoot the
-   row by only ~40-50px a side, so the bleed lands in the neighboring
-   row's padding, never over its title/description text. */
+/* Image is always visible now (not a hover-reveal) — a small inline
+   thumbnail, same on every breakpoint and every input type, so it never
+   depends on hover to be discoverable and can never overlap a
+   neighboring row's text. */
 .imageSlot {
-  position: relative;
-  height: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-radius: 2px;
 }
 
 .image {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  /* 180 / 220 mirror --service-image-w / --service-image-h exactly — kept
-     in sync by hand, since an <img> can't consume a CSS custom property
-     for intrinsic sizing here (it's positioned/sized independently of the
-     grid track, which is itself sized from the same two tokens). */
-  width: var(--service-image-w);
-  height: var(--service-image-h);
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 2px;
-  /* Elevation reads the overlap as a deliberate floating card instead of
-     a layout glitch where it crosses the row hairlines. */
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
-  pointer-events: none;
+  transition: transform var(--dur-image) var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .row:hover .image {
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image {
+    transition: none;
+  }
 }
 
 /* Desktop row layout */
@@ -132,17 +129,23 @@
     grid-template-columns:
       var(--service-num-col)
       minmax(0, 1.25fr)
-      calc(var(--service-image-w) + var(--service-image-gutter))
+      var(--service-image-w)
       minmax(0, 1fr);
     column-gap: var(--grid-gap);
     align-items: center;
     padding-block: var(--service-row-y-desktop);
   }
+
+  .imageSlot {
+    width: var(--service-image-w);
+    height: var(--service-image-h);
+  }
 }
 
-/* Mobile: no image column, everything stacks. --bp-tablet as a literal:
-   media query conditions can't consume CSS custom properties (see Nav's
-   own note on this same limitation). */
+/* Mobile: image sits between the title and description, full-width and
+   shorter, instead of the fixed thumbnail box used on desktop.
+   --bp-tablet as a literal: media query conditions can't consume CSS
+   custom properties (see Nav's own note on this same limitation). */
 @media (max-width: 899px) {
   .row {
     display: flex;
@@ -152,41 +155,8 @@
   }
 
   .imageSlot {
-    display: none;
-  }
-}
-
-/* Hover reveal — CSS only, no JS state. Scoped to devices that can
-   genuinely hover with a precise pointer, so the image never shows
-   (permanently invisible, no way to trigger it) on touch/coarse-pointer
-   devices even at desktop widths. */
-@media (hover: hover) and (pointer: fine) {
-  .image {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.96);
-    transition:
-      opacity var(--dur-image) var(--ease),
-      transform var(--dur-image) var(--ease);
-  }
-
-  .row:hover .image {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-
-  .row:hover {
-    z-index: 1;
-  }
-
-  .row:hover .num {
-    color: var(--black);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .image {
-    transition: none;
-    transform: translate(-50%, -50%); /* no scale */
+    width: 100%;
+    aspect-ratio: 16 / 9;
   }
 }
 

@@ -82,9 +82,8 @@
 
   /* Services */
   --service-num-col: 64px;
-  --service-image-w: 180px;
-  --service-image-h: 220px;
-  --service-image-gutter: 20px;
+  --service-image-w: 140px;
+  --service-image-h: 104px;
   --service-row-y-desktop: 44px;
   --service-row-y-mobile: 32px;
   --service-stack-gap: 12px;
