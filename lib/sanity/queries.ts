@@ -92,15 +92,14 @@ export const aboutSettingsQuery = groq`
 
 // servicesPage is a singleton (may be null pre-publish); service is an
 // orderable document list, same convention as project/pressLogo/partner
-// above. hoverImage is dereferenced (unlike project/partner's bare image
-// convention) since the future hover UI needs the asset's real dimensions
-// up front for a fade-in with no layout shift.
+// above. The Services page no longer renders an image per service, so
+// hoverImage isn't projected here even though the schema field still
+// exists for editors.
 export const servicesPageQuery = groq`
   {
     "page": *[_type == "servicesPage"][0]{ heading, intro, closingHeading, closingLinkLabel },
     "services": *[_type == "service" && defined(title)] | order(orderRank){
-      _id, title, subtitle, description,
-      hoverImage{ ..., asset->{ _id, url, metadata{ lqip, dimensions } } }
+      _id, title, subtitle, description
     }
   }
 `

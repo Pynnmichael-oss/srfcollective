@@ -92,71 +92,26 @@
   color: var(--ink);
 }
 
-/* Image is always visible now (not a hover-reveal) — a small inline
-   thumbnail, same on every breakpoint and every input type, so it never
-   depends on hover to be discoverable and can never overlap a
-   neighboring row's text. */
-.imageSlot {
-  overflow: hidden;
-  flex-shrink: 0;
-  border-radius: 2px;
-}
-
-.image {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--dur-image) var(--ease);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .row:hover .image {
-    transform: scale(1.04);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .image {
-    transition: none;
-  }
-}
-
 /* Desktop row layout */
 @media (min-width: 900px) {
   .row {
     display: grid;
-    grid-template-columns:
-      var(--service-num-col)
-      minmax(0, 1.25fr)
-      var(--service-image-w)
-      minmax(0, 1fr);
+    grid-template-columns: var(--service-num-col) minmax(0, 1.25fr) minmax(0, 1fr);
     column-gap: var(--grid-gap);
     align-items: center;
     padding-block: var(--service-row-y-desktop);
   }
-
-  .imageSlot {
-    width: var(--service-image-w);
-    height: var(--service-image-h);
-  }
 }
 
-/* Mobile: image sits between the title and description, full-width and
-   shorter, instead of the fixed thumbnail box used on desktop.
-   --bp-tablet as a literal: media query conditions can't consume CSS
-   custom properties (see Nav's own note on this same limitation). */
+/* Mobile: everything stacks. --bp-tablet as a literal: media query
+   conditions can't consume CSS custom properties (see Nav's own note on
+   this same limitation). */
 @media (max-width: 899px) {
   .row {
     display: flex;
     flex-direction: column;
     gap: var(--service-stack-gap);
     padding-block: var(--service-row-y-mobile);
-  }
-
-  .imageSlot {
-    width: 100%;
-    aspect-ratio: 16 / 9;
   }
 }
 

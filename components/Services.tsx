@@ -1,18 +1,8 @@
 import Link from 'next/link'
 
-import { urlFor } from '@/lib/sanity/image'
-import type { Service, ServicesPage, SanityImage, SanityImageWithAsset } from '@/lib/sanity/types'
+import type { Service, ServicesPage } from '@/lib/sanity/types'
 
 import styles from './Services.module.css'
-
-// urlFor()'s declared parameter type (SanityImage, a bare asset _ref) is
-// narrower than what @sanity/image-url's builder.image() actually accepts
-// at runtime — a dereferenced asset object like hoverImage is one of its
-// documented input shapes (SanityImageObject). This local cast only
-// widens the type urlFor() is told to expect; it changes no behavior.
-function hoverImageUrl(image: SanityImageWithAsset) {
-  return urlFor(image as unknown as SanityImage)
-}
 
 interface ServicesProps {
   page: ServicesPage | null
@@ -27,7 +17,6 @@ function clean(item: Service) {
     title: item.title?.trim(),
     subtitle: item.subtitle?.trim() || undefined,
     description: item.description?.trim(),
-    hoverImage: item.hoverImage?.asset ? item.hoverImage : undefined,
   }
 }
 
@@ -59,36 +48,6 @@ export default function Services({ page, services }: ServicesProps) {
                   {item.title && <h2 className={styles.title}>{item.title}</h2>}
                   {item.subtitle && <p className={styles.subtitle}>{item.subtitle}</p>}
                 </div>
-                {/* Slot always renders (even without an image) so every
-                    row's grid keeps the same 4-column track — only the
-                    <img> itself is conditional, so there's never a broken
-                    or empty image element. Always visible (not a
-                    hover-reveal), so it needs a real alt rather than being
-                    decorative. */}
-                <span className={styles.imageSlot}>
-                  {item.hoverImage && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      // Hotspot-aware crop: passing both width() and height()
-                      // to @sanity/image-url auto-crops to the hotspot rect
-                      // (see Activations.module.css for the same mechanism
-                      // used deliberately here, unlike the bare-image
-                      // convention used for gallery tiles). 140x104 and
-                      // 280x208 mirror --service-image-w/--service-image-h
-                      // exactly — JS numeric literals can't reference CSS
-                      // custom properties, so keep these two in sync by hand.
-                      src={hoverImageUrl(item.hoverImage).width(140).height(104).fit('crop').auto('format').url()}
-                      srcSet={[
-                        `${hoverImageUrl(item.hoverImage).width(140).height(104).fit('crop').auto('format').url()} 140w`,
-                        `${hoverImageUrl(item.hoverImage).width(280).height(208).fit('crop').auto('format').url()} 280w`,
-                      ].join(', ')}
-                      sizes="(max-width: 899px) 100vw, 140px"
-                      loading="lazy"
-                      alt={item.title ? `${item.title} — SRF Collective` : ''}
-                      className={styles.image}
-                    />
-                  )}
-                </span>
                 {item.description && <p className={styles.description}>{item.description}</p>}
               </li>
             ))}
