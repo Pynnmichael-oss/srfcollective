@@ -42,7 +42,49 @@
 }
 
 .row {
+  position: relative; /* anchors the ::before glow */
+  isolation: isolate; /* contains the glow's negative z-index to this row,
+                          instead of it escaping to the list's own stacking
+                          context and landing behind a neighboring row */
   border-bottom: 1px solid var(--hairline);
+}
+
+/* Hover glow — a soft radial highlight behind the row's text, plus the
+   number/title motion below, is the "aura" on roll-over. Gated to devices
+   that can genuinely hover with a precise pointer, same convention as the
+   rest of the site (see Nav's underline, WorkTile's spotlight trigger). */
+.row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(760px 100% at 0% 50%, rgba(0, 0, 0, 0.04), transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .row::before {
+    transition: opacity var(--dur-hover) var(--ease);
+  }
+
+  .row:hover::before {
+    opacity: 1;
+  }
+
+  .row:hover .num {
+    color: var(--black);
+  }
+
+  .row:hover .title {
+    transform: translateX(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row:hover .title {
+    transform: none;
+  }
 }
 
 .num {
@@ -51,6 +93,7 @@
   font-weight: 400;
   letter-spacing: 0.12em;
   color: var(--muted);
+  transition: color var(--dur-hover) var(--ease);
 }
 
 .titleGroup {
@@ -65,6 +108,7 @@
   font-weight: 500;
   line-height: 1.1;
   color: var(--black);
+  transition: transform var(--dur-hover) var(--ease);
 }
 
 .subtitle {
