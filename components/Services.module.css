@@ -99,7 +99,9 @@
    Services.tsx); height: 0 lets its absolutely positioned <img> center on
    the row's own vertical midpoint via top: 50%, then bleed past it via
    translate(-50%, -50%) — this is how the image overlaps the hairlines
-   above and below the row. */
+   above and below the row. --service-image-h is sized to overshoot the
+   row by only ~40-50px a side, so the bleed lands in the neighboring
+   row's padding, never over its title/description text. */
 .imageSlot {
   position: relative;
   height: 0;
@@ -109,13 +111,17 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  /* 240 / 300 mirror --service-image-w / --service-image-h exactly — kept
+  /* 180 / 220 mirror --service-image-w / --service-image-h exactly — kept
      in sync by hand, since an <img> can't consume a CSS custom property
      for intrinsic sizing here (it's positioned/sized independently of the
      grid track, which is itself sized from the same two tokens). */
   width: var(--service-image-w);
   height: var(--service-image-h);
   object-fit: cover;
+  border-radius: 2px;
+  /* Elevation reads the overlap as a deliberate floating card instead of
+     a layout glitch where it crosses the row hairlines. */
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
   pointer-events: none;
 }
 

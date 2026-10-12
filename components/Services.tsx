@@ -71,16 +71,16 @@ export default function Services({ page, services }: ServicesProps) {
                       // to @sanity/image-url auto-crops to the hotspot rect
                       // (see Activations.module.css for the same mechanism
                       // used deliberately here, unlike the bare-image
-                      // convention used for gallery tiles). 240x300 and
-                      // 480x600 mirror --service-image-w/--service-image-h
+                      // convention used for gallery tiles). 180x220 and
+                      // 360x440 mirror --service-image-w/--service-image-h
                       // exactly — JS numeric literals can't reference CSS
                       // custom properties, so keep these two in sync by hand.
-                      src={hoverImageUrl(item.hoverImage).width(240).height(300).fit('crop').auto('format').url()}
+                      src={hoverImageUrl(item.hoverImage).width(180).height(220).fit('crop').auto('format').url()}
                       srcSet={[
-                        `${hoverImageUrl(item.hoverImage).width(240).height(300).fit('crop').auto('format').url()} 240w`,
-                        `${hoverImageUrl(item.hoverImage).width(480).height(600).fit('crop').auto('format').url()} 480w`,
+                        `${hoverImageUrl(item.hoverImage).width(180).height(220).fit('crop').auto('format').url()} 180w`,
+                        `${hoverImageUrl(item.hoverImage).width(360).height(440).fit('crop').auto('format').url()} 360w`,
                       ].join(', ')}
-                      sizes="240px"
+                      sizes="180px"
                       loading="lazy"
                       alt=""
                       aria-hidden="true"
