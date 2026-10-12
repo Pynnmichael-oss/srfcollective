@@ -38,21 +38,12 @@ export default defineType({
           .max(220)
           .warning('This is getting long — consider trimming it to one or two sentences'),
     }),
-    defineField({
-      name: 'hoverImage',
-      title: 'Hover image',
-      type: 'image',
-      description:
-        'Optional. Shows beside this service when someone hovers over it on a computer (not on phones). Portrait photos work best. At least 1600px on the long edge, under 2MB, JPEG.',
-      options: { hotspot: true },
-    }),
     orderRankField({ type: 'service' }),
   ],
   preview: {
     select: {
       title: 'title',
       subtitle: 'subtitle',
-      media: 'hoverImage',
     },
   },
 })

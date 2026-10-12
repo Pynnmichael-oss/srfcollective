@@ -101,6 +101,14 @@
     align-items: center;
     padding-block: var(--service-row-y-desktop);
   }
+
+  /* Pulls the description flush against the row's right edge instead of
+     left-hugging its 1fr track — without the old hover image to fill that
+     track, left-aligned text stranded a growing dead zone on wide
+     viewports (up to ~250px at 1440px, worse beyond it). */
+  .description {
+    justify-self: end;
+  }
 }
 
 /* Mobile: everything stacks. --bp-tablet as a literal: media query

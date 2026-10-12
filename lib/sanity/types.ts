@@ -78,39 +78,11 @@ export interface AboutSettings {
   body?: PortableTextBlock[] | null
 }
 
-// A dereferenced image asset (unlike SanityImage's bare _ref) — used where
-// the frontend needs the asset's real dimensions/LQIP up front, e.g. for a
-// fade-in with no layout shift.
-export interface SanityImageAsset {
-  _id: string
-  url: string
-  metadata?: {
-    lqip?: string
-    dimensions?: {
-      width: number
-      height: number
-      aspectRatio: number
-    }
-  }
-}
-
-export interface SanityImageWithAsset {
-  _type: 'image'
-  asset: SanityImageAsset
-  hotspot?: {
-    x: number
-    y: number
-    height: number
-    width: number
-  }
-}
-
 export interface Service {
   _id: string
   title: string
   subtitle?: string | null
   description: string
-  hoverImage?: SanityImageWithAsset | null
 }
 
 // heading/intro etc. describe the singleton document itself — the whole
