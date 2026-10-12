@@ -25,15 +25,24 @@ export const structure: StructureResolver = (S, context) =>
           S.document().schemaType('aboutSettings').documentId('aboutSettings').title('About Page'),
         ),
       S.listItem()
-        .title('Services Page')
+        .title('Services')
         .icon(ThListIcon)
         .child(
-          S.document()
-            .schemaType('servicesPage')
-            .documentId('servicesPage')
-            .title('Services Page'),
+          S.list()
+            .title('Services')
+            .items([
+              S.listItem()
+                .title('Page copy')
+                .icon(ThListIcon)
+                .child(
+                  S.document()
+                    .schemaType('servicesPage')
+                    .documentId('servicesPage')
+                    .title('Page copy'),
+                ),
+              orderableDocumentListDeskItem({ type: 'service', title: 'Service list', S, context }),
+            ]),
         ),
-      orderableDocumentListDeskItem({ type: 'service', title: 'Services', S, context }),
       S.divider(),
       orderableDocumentListDeskItem({ type: 'pressLogo', title: 'Press', S, context }),
       orderableDocumentListDeskItem({ type: 'partner', title: 'Partners', S, context }),
