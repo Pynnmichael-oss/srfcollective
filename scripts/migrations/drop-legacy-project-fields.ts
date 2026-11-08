@@ -37,7 +37,9 @@ const LEGACY_FIELDS = [
 interface ProjectDoc {
   _id: string
   client?: string
-  present?: string[]
+  // One boolean per legacy field, keyed by field name — a plain projection
+  // rather than a conditional array, which this API version won't parse.
+  has?: Record<string, boolean>
 }
 
 async function run() {
@@ -71,11 +73,14 @@ async function run() {
     `*[_type == "project"]{
       _id,
       client,
-      "present": [${LEGACY_FIELDS.map((field) => `defined(${field}) => "${field}"`).join(', ')}]
+      "has": { ${LEGACY_FIELDS.map((field) => `"${field}": defined(${field})`).join(', ')} }
     } | order(_id asc)`,
   )
 
-  const needsWork = projects.filter((project) => (project.present ?? []).length > 0)
+  const present = (project: ProjectDoc) =>
+    LEGACY_FIELDS.filter((field) => project.has?.[field])
+
+  const needsWork = projects.filter((project) => present(project).length > 0)
 
   console.log(`${projects.length} project(s); ${needsWork.length} still holding legacy fields.`)
 
@@ -85,7 +90,7 @@ async function run() {
   }
 
   for (const project of needsWork) {
-    const fields = project.present ?? []
+    const fields = present(project)
     const label = `${project._id} (${project.client ?? 'no client'})`
 
     if (dryRun) {
