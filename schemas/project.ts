@@ -61,6 +61,14 @@ export default defineType({
       validation: (rule) => rule.min(1).error('Add at least one photo or video.'),
     }),
     defineField({
+      name: 'coverPhoto',
+      title: 'Cover photo',
+      type: 'image',
+      options: { hotspot: true },
+      description:
+        'Optional. The wide banner across the top of this project’s own page. A landscape photo works best: a portrait video stretched that wide gets cropped to a thin strip and looks soft. Use the crop tool to set which part stays in frame. Leave this empty and the first item above is used instead, shown at its own natural shape rather than stretched.',
+    }),
+    defineField({
       name: 'description',
       title: 'Description',
       type: 'text',

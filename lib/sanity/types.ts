@@ -73,6 +73,9 @@ export interface Project {
   slug?: Slug
   categories?: string[]
   // Projected only by projectBySlugQuery — the grids never show these.
+  // coverPhoto is the project page's wide banner; without one the page
+  // falls back to media[0] at its natural shape.
+  coverPhoto?: SanityImage | null
   description?: string | null
   date?: string | null
   // Every photo and video for this client, in the order she arranged them.

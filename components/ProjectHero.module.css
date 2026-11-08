@@ -1,27 +1,77 @@
-/* Full-bleed: breaks out of any centred container by spanning the whole
-   viewport width, regardless of where it sits in the layout. */
-.hero {
+/* ---- Banner: a cover photo, full-bleed ----
+   Breaks out of any centred container by spanning the whole viewport,
+   regardless of where it sits in the layout. Only a photo gets this
+   treatment: it can be high-resolution and composed for the shape. */
+.banner {
   position: relative;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  aspect-ratio: var(--hero-ratio, 16 / 9);
-  /* A portrait cover would otherwise be taller than the screen and bury
-     the project's name below the fold. */
-  max-height: 85vh;
+  aspect-ratio: 12 / 5;
+  max-height: 80vh;
   overflow: hidden;
   background-color: #0e0e0e;
   background-size: cover;
   background-position: center;
 }
 
-.hero > :global(*) {
-  width: 100%;
-  height: 100%;
+/* A 12:5 letterbox is unreadably thin on a phone — taller there, so the
+   subject survives the narrower viewport. */
+@media (max-width: 720px) {
+  .banner {
+    aspect-ratio: 4 / 3;
+  }
 }
 
-.image {
+.bannerImage {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* object-position is set inline, from the image's hotspot. */
+}
+
+/* ---- Contained: the fallback, media[0] at its natural shape ----
+   Sized by height, so width follows the aspect ratio. A 9:16 portrait
+   ends up a tall, narrow block rather than a stretched strip, and the
+   asset is only ever scaled down. */
+.containedOuter {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1.5rem 0;
+}
+
+.contained {
+  position: relative;
+  height: min(72vh, 40rem);
+  aspect-ratio: var(--hero-ratio, 16 / 9);
+  max-width: 100%;
+  overflow: hidden;
+  background-color: #0e0e0e;
+  background-size: cover;
+  background-position: center;
+}
+
+.contained > :global(*) {
+  width: 100%;
+  height: 100%;
+}
+
+.containedImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* On a phone a tall hero eats the whole screen before any context — cap it
+   shorter and let width drive instead. */
+@media (max-width: 720px) {
+  .containedOuter {
+    padding: 1rem 1rem 0;
+  }
+
+  .contained {
+    height: auto;
+    width: 100%;
+  }
 }

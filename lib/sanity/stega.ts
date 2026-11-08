@@ -51,6 +51,7 @@ export function cleanProject(project: Project): Project {
   return {
     ...project,
     _id: stegaClean(project._id),
+    coverPhoto: project.coverPhoto && cleanImage(project.coverPhoto),
     media: project.media?.map(cleanMediaItem),
   }
 }

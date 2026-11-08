@@ -92,7 +92,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <main className={styles.main}>
-      <ProjectHero item={cover.item} client={project.client} />
+      <ProjectHero item={cover.item} client={project.client} coverPhoto={project.coverPhoto} />
 
       <header className={styles.details}>
         <h1 className={styles.client}>{project.client}</h1>
