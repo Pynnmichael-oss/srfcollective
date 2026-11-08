@@ -12,12 +12,13 @@ export const structure: StructureResolver = (S, context) =>
     .items([
       orderableDocumentListDeskItem({ type: 'project', title: 'Projects', S, context }),
       S.divider(),
+      // "Homepage" rather than "Homepage & Site Settings": the homepage
+      // highlights are what she actually comes here to change, and "site
+      // settings" reads like something technical she might break.
       S.listItem()
-        .title('Homepage & Site Settings')
+        .title('Homepage')
         .icon(CogIcon)
-        .child(
-          S.document().schemaType('siteSettings').documentId('siteSettings').title('Homepage & Site Settings'),
-        ),
+        .child(S.document().schemaType('siteSettings').documentId('siteSettings').title('Homepage')),
       S.listItem()
         .title('About Page')
         .icon(UserIcon)

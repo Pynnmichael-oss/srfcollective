@@ -12,12 +12,20 @@ export default defineType({
   title: 'Project',
   type: 'document',
   icon: ImagesIcon,
+  // Three tabs rather than one long scroll. Every field carries a group:
+  // one left out would show up under every tab instead of just its own.
+  groups: [
+    { name: 'basics', title: 'Basics', default: true },
+    { name: 'media', title: 'Photos & videos' },
+    { name: 'story', title: 'Story' },
+  ],
   // Field order is the editing order: name the client first, then date it,
   // tag it, then upload. `slug` used to sit below the uploader, which meant
   // scrolling past every photo to type the client's name.
   fields: [
     defineField({
       name: 'client',
+      group: 'basics',
       title: 'Client',
       type: 'string',
       description: 'The name of the client or brand this project was made for.',
@@ -25,6 +33,7 @@ export default defineType({
     }),
     defineField({
       name: 'date',
+      group: 'basics',
       title: 'Date',
       type: 'date',
       description:
@@ -34,6 +43,7 @@ export default defineType({
     }),
     defineField({
       name: 'categories',
+      group: 'basics',
       title: 'Categories',
       type: 'array',
       of: [{ type: 'string' }],
@@ -54,6 +64,7 @@ export default defineType({
     }),
     defineField({
       name: 'media',
+      group: 'media',
       title: 'Photos & videos',
       type: 'array',
       of: [{ type: 'photoItem' }, { type: 'videoItem' }],
@@ -66,6 +77,7 @@ export default defineType({
     // keeps the banner guaranteed to be work that is actually in the project.
     defineField({
       name: 'heroPhotoKey',
+      group: 'media',
       title: 'Hero image',
       type: 'string',
       components: { input: HeroPickerInput },
@@ -74,6 +86,7 @@ export default defineType({
     }),
     defineField({
       name: 'description',
+      group: 'story',
       title: 'Description',
       type: 'text',
       rows: 3,
@@ -82,6 +95,7 @@ export default defineType({
     }),
     defineField({
       name: 'details',
+      group: 'story',
       title: 'Project details',
       type: 'array',
       of: [{ type: 'detailRow' }],
@@ -95,6 +109,7 @@ export default defineType({
     // type one by hand, and changing it would break shared links.
     defineField({
       name: 'slug',
+      group: 'basics',
       title: 'Web address',
       type: 'slug',
       components: { input: DerivedSlugInput },

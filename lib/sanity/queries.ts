@@ -146,9 +146,8 @@ export const aboutSettingsQuery = groq`
 
 // servicesPage is a singleton (may be null pre-publish); service is an
 // orderable document list, same convention as project/pressLogo/partner
-// above. The Services page no longer renders an image per service, so
-// hoverImage isn't projected here even though the schema field still
-// exists for editors.
+// above. The Services page renders no image per service — the `hoverImage`
+// field that once fed one is gone from the schema and unset in the dataset.
 export const servicesPageQuery = groq`
   {
     "page": *[_type == "servicesPage"][0]{ heading, intro, closingHeading, closingLinkLabel },

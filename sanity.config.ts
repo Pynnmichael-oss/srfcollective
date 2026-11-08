@@ -11,6 +11,7 @@ import { defineLocations, presentationTool } from 'sanity/presentation'
 import { structureTool } from 'sanity/structure'
 import { muxInput } from 'sanity-plugin-mux-input'
 
+import HomepageBadge from './schemas/components/HomepageBadge'
 import { schemaTypes } from './schemas'
 import { SINGLETON_TYPES, structure } from './structure'
 
@@ -81,6 +82,10 @@ export default defineConfig({
     }),
   ],
   document: {
+    // "On homepage" on a project she has featured. Being featured lives on
+    // siteSettings, so nothing on the project itself would otherwise show it.
+    badges: (prev, { schemaType }) =>
+      schemaType === 'project' ? [...prev, HomepageBadge] : prev,
     // Singletons (Site Settings) can only ever be reached through the fixed
     // link in structure.ts — never offered in the global "+ Create" menu,
     // and never duplicatable or deletable (which would otherwise leave no
