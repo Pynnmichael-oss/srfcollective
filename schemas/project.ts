@@ -27,7 +27,7 @@ export default defineType({
       title: 'Date',
       type: 'date',
       description:
-        'Used to sort your Work page, newest first. Usually when the work was made or published.',
+        'When the work was made or published — shown on the project’s own page, e.g. “September 2026”. This does not change the order your work appears in: drag projects up and down the Projects list to do that.',
       initialValue: () => new Date().toISOString().slice(0, 10),
       validation: (rule) => rule.required(),
     }),

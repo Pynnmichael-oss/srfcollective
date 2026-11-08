@@ -17,6 +17,20 @@ interface ProjectPageProps {
   params: Promise<{ slug: string }>;
 }
 
+// "2026-09-16" -> "September 2026". Parsed from the parts rather than passed
+// to new Date(), which reads a bare YYYY-MM-DD as UTC midnight and can shift
+// it back a day — and so a month — in timezones behind UTC.
+function formatProjectDate(value: string | null | undefined): string | null {
+  if (!value) return null;
+
+  const [year, month] = value.split("-").map(Number);
+  if (!year || !month) return null;
+
+  return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(
+    new Date(year, month - 1, 1),
+  );
+}
+
 // Every project page is prerendered at build time. A project added after a
 // deploy still renders on demand (dynamicParams defaults to true), so she
 // never has to wait for a rebuild to see new work.
@@ -74,6 +88,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   const categories = project.categories?.length ? project.categories.join(", ") : null;
+  const date = formatProjectDate(project.date);
 
   return (
     <main className={styles.main}>
@@ -81,7 +96,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
       <header className={styles.details}>
         <h1 className={styles.client}>{project.client}</h1>
-        {categories && <p className={styles.categories}>{categories}</p>}
+        {(categories || date) && (
+          <p className={styles.meta}>
+            {categories}
+            {categories && date && <span className={styles.separator}> · </span>}
+            {date}
+          </p>
+        )}
         {project.description && <p className={styles.description}>{project.description}</p>}
       </header>
 

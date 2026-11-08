@@ -18,12 +18,16 @@
   letter-spacing: -0.01em;
 }
 
-.categories {
+.meta {
   margin: 0.75rem 0 0;
   font-size: 0.8125rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   opacity: 0.6;
+}
+
+.separator {
+  opacity: 0.5;
 }
 
 .description {
