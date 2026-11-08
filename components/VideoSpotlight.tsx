@@ -1,6 +1,7 @@
 'use client'
 
 import MuxPlayer, { type MuxPlayerRefAttributes } from '@mux/mux-player-react'
+import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 
 import styles from './VideoSpotlight.module.css'
@@ -13,6 +14,10 @@ interface VideoSpotlightProps {
   // the tile didn't have one, the video's own dimensions are read on
   // loadedmetadata instead (see the effect below).
   aspectRatio?: string
+  // The project's own page. Offered as a "View full project" link, so the
+  // homepage's quick look still has a door through to the full set of
+  // media — without putting another affordance on the grid tile itself.
+  projectHref?: string
   onClose: () => void
 }
 
@@ -22,7 +27,13 @@ interface VideoSpotlightProps {
 // ancestor's overflow/stacking (the tile it's rendered next to has
 // overflow: hidden). Every way of closing (button, Esc, backdrop, browser
 // Back) funnels through requestClose so cleanup only happens once.
-export default function VideoSpotlight({ playbackId, label, aspectRatio, onClose }: VideoSpotlightProps) {
+export default function VideoSpotlight({
+  playbackId,
+  label,
+  aspectRatio,
+  projectHref,
+  onClose,
+}: VideoSpotlightProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const playerRef = useRef<MuxPlayerRefAttributes>(null)
   const closingRef = useRef(false)
@@ -227,6 +238,11 @@ export default function VideoSpotlight({ playbackId, label, aspectRatio, onClose
           playsInline
           className={styles.player}
         />
+        {projectHref && (
+          <Link href={projectHref} className={styles.projectLink}>
+            View full project <span aria-hidden="true">→</span>
+          </Link>
+        )}
       </div>
     </dialog>
   )

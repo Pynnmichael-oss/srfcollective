@@ -139,3 +139,24 @@
     );
   }
 }
+
+/* "View full project" — the way out of a homepage quick look into the
+   project's own page. Sits under the player, inside .content, so it
+   inherits the same max-width and centring as the video itself. */
+.projectLink {
+  display: inline-block;
+  margin-top: 1rem;
+  align-self: flex-start;
+  color: #fff;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  opacity: 0.75;
+  transition: opacity 160ms ease;
+}
+
+.projectLink:hover,
+.projectLink:focus-visible {
+  opacity: 1;
+}

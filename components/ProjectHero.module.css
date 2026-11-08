@@ -1,0 +1,27 @@
+/* Full-bleed: breaks out of any centred container by spanning the whole
+   viewport width, regardless of where it sits in the layout. */
+.hero {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  aspect-ratio: var(--hero-ratio, 16 / 9);
+  /* A portrait cover would otherwise be taller than the screen and bury
+     the project's name below the fold. */
+  max-height: 85vh;
+  overflow: hidden;
+  background-color: #0e0e0e;
+  background-size: cover;
+  background-position: center;
+}
+
+.hero > :global(*) {
+  width: 100%;
+  height: 100%;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

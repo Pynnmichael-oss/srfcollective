@@ -1,7 +1,8 @@
 'use client'
 
 import MuxPlayer, { type MuxPlayerRefAttributes } from '@mux/mux-player-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
+import { useCallback, useEffect, useMemo, useRef, useState, type Ref } from 'react'
 
 import { clipWindow } from '@/lib/video'
 
@@ -17,6 +18,16 @@ interface WorkTileVideoProps {
   previewStart?: number
   duration?: number
   alt: string
+  // Where a click goes.
+  //   href set   -> the tile is a link to the project's page (/work).
+  //   href unset -> the tile opens the spotlight in place (homepage, and
+  //                 the media on a project page).
+  // The silent-preview playback gates below are identical either way; only
+  // the click target and the element differ.
+  href?: string
+  // Offered inside the spotlight as "View full project" — spotlight mode
+  // only, since in link mode the click already goes there.
+  projectHref?: string
 }
 
 // One event, shared by every grid tile's module instance, so opening any
@@ -48,8 +59,10 @@ export default function WorkTileVideo({
   previewStart,
   duration,
   alt,
+  href,
+  projectHref,
 }: WorkTileVideoProps) {
-  const frameRef = useRef<HTMLButtonElement>(null)
+  const frameRef = useRef<HTMLElement>(null)
   const playerRef = useRef<MuxPlayerRefAttributes>(null)
   const inViewRef = useRef(false)
   const spotlightOpenRef = useRef(false)
@@ -176,16 +189,9 @@ export default function WorkTileVideo({
     ? `Watch ${alt} with sound`
     : `Watch ${alt} video with sound`
 
-  return (
+  const preview = (
     <>
-      <button
-        ref={frameRef}
-        type="button"
-        className={`${sharedStyles.videoFrame} ${styles.trigger}`}
-        aria-label={triggerLabel}
-        onClick={openSpotlight}
-      >
-        {shouldLoad && !reducedMotion ? (
+      {shouldLoad && !reducedMotion ? (
           <MuxPlayer
             ref={playerRef}
             streamType="on-demand"
@@ -201,23 +207,52 @@ export default function WorkTileVideo({
             className={sharedStyles.videoPlayer}
             style={{ '--controls': 'none' }}
           />
-        ) : (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={poster} alt={alt} className={sharedStyles.videoPoster} />
-        )}
-        <span className={styles.muteBadge} aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <line x1="23" y1="9" x2="17" y2="15" />
-            <line x1="17" y1="9" x2="23" y2="15" />
-          </svg>
-        </span>
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={poster} alt={alt} className={sharedStyles.videoPoster} />
+      )}
+      <span className={styles.muteBadge} aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+          <line x1="23" y1="9" x2="17" y2="15" />
+          <line x1="17" y1="9" x2="23" y2="15" />
+        </svg>
+      </span>
+    </>
+  )
+
+  // Link mode: a real anchor, so keyboard, middle-click, open-in-new-tab
+  // and crawlers all work. No spotlight is rendered at all here.
+  if (href) {
+    return (
+      <Link
+        ref={frameRef as Ref<HTMLAnchorElement>}
+        href={href}
+        className={`${sharedStyles.videoFrame} ${styles.trigger}`}
+        aria-label={`View the ${alt} project`}
+      >
+        {preview}
+      </Link>
+    )
+  }
+
+  return (
+    <>
+      <button
+        ref={frameRef as Ref<HTMLButtonElement>}
+        type="button"
+        className={`${sharedStyles.videoFrame} ${styles.trigger}`}
+        aria-label={triggerLabel}
+        onClick={openSpotlight}
+      >
+        {preview}
       </button>
       {isSpotlightOpen && (
         <VideoSpotlight
           playbackId={playbackId}
           label={alt}
           aspectRatio={spotlightRatio}
+          projectHref={projectHref}
           onClose={closeSpotlight}
         />
       )}

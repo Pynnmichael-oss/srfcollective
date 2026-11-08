@@ -15,6 +15,9 @@ interface WorkGridProps {
   // Renders a left-aligned label above the grid when set — used on the
   // homepage ("Featured Work"); omitted on /work itself.
   label?: string
+  // Passed to every tile: 'link' navigates to the project page (/work),
+  // 'spotlight' opens a video in place (homepage). See WorkTile.
+  behavior?: 'link' | 'spotlight'
 }
 
 // Desktop is 3 CSS columns. Since this is a columns-based masonry (not a
@@ -23,7 +26,7 @@ interface WorkGridProps {
 // task, not a guaranteed visual first row on every breakpoint.
 const EAGER_COUNT = 3
 
-export default function WorkGrid({ tiles, viewAllHref, label }: WorkGridProps) {
+export default function WorkGrid({ tiles, viewAllHref, label, behavior }: WorkGridProps) {
   if (!tiles.length) {
     return null
   }
@@ -43,7 +46,12 @@ export default function WorkGrid({ tiles, viewAllHref, label }: WorkGridProps) {
       )}
       <div className={styles.grid}>
         {tiles.map((tile, index) => (
-          <WorkTile key={tile.key} tile={tile} priority={index < EAGER_COUNT} />
+          <WorkTile
+            key={tile.key}
+            tile={tile}
+            priority={index < EAGER_COUNT}
+            behavior={behavior}
+          />
         ))}
       </div>
       {viewAllHref && (

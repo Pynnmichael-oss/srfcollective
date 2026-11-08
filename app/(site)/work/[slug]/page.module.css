@@ -1,0 +1,73 @@
+.main {
+  /* The hero is full-bleed and handles its own width, so no top padding
+     here — the cover meets the header cleanly. */
+  padding-bottom: 6rem;
+}
+
+.details {
+  max-width: 48rem;
+  margin: 3.5rem auto 0;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.client {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.categories {
+  margin: 0.75rem 0 0;
+  font-size: 0.8125rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.description {
+  margin: 1.5rem 0 0;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  opacity: 0.85;
+}
+
+/* Two columns, as chosen. Collapses to one on phones, where side-by-side
+   portrait video is unreadably small. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  max-width: 76rem;
+  margin: 4rem auto 0;
+  padding: 0 1.5rem;
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.footer {
+  margin-top: 4rem;
+  text-align: center;
+}
+
+.back {
+  display: inline-block;
+  font-size: 0.8125rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 160ms ease;
+}
+
+.back:hover,
+.back:focus-visible {
+  opacity: 1;
+}

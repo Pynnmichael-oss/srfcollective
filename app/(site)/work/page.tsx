@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import WorkGrid from "@/components/WorkGrid";
 import { sanityFetch } from "@/lib/sanity/fetch";
-import { allTiles } from "@/lib/sanity/media";
+import { coverTiles } from "@/lib/sanity/media";
 import { workProjectsQuery } from "@/lib/sanity/queries";
 import { cleanProject } from "@/lib/sanity/stega";
 import type { Project } from "@/lib/sanity/types";
@@ -19,9 +19,9 @@ export default async function WorkPage() {
   return (
     <main>
       <h1 className={styles.heading}>Work</h1>
-      {/* Every photo and video, not just each project's cover, so
-          everything she uploads appears here. */}
-      <WorkGrid tiles={allTiles(projects.map(cleanProject))} />
+      {/* One cover per project, each linking through to that project's
+          own page — which is where the rest of its media lives. */}
+      <WorkGrid tiles={coverTiles(projects.map(cleanProject))} behavior="link" />
     </main>
   );
 }

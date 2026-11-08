@@ -41,6 +41,7 @@ const projectProjection = groq`
   _type,
   client,
   categories,
+  slug,
   "media": media[${RENDERABLE}]{
     ${mediaProjection}
   }
@@ -74,9 +75,28 @@ export const featuredProjectsQuery = groq`
 `
 
 // Full portfolio for /work, in the same Studio drag-order as the Projects list.
+// One tile per project (its cover) — each links through to the project's own
+// page, which is where the rest of its media lives.
 export const workProjectsQuery = groq`
   *[_type == "project" && (${HAS_RAW_MEDIA})] | order(orderRank) {
     ${projectProjection}
+  }
+`
+
+// Every project page to prerender. Mirrors workProjectsQuery's filter: a
+// project with no renderable media has nothing to show, and one without a
+// slug has no address to show it at.
+export const projectSlugsQuery = groq`
+  *[_type == "project" && defined(slug.current) && (${HAS_RAW_MEDIA})].slug.current
+`
+
+// One project page. `description` and `date` are projected here and nowhere
+// else — the grids don't show them.
+export const projectBySlugQuery = groq`
+  *[_type == "project" && slug.current == $slug && (${HAS_RAW_MEDIA})][0]{
+    ${projectProjection},
+    description,
+    date
   }
 `
 

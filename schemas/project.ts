@@ -3,6 +3,7 @@ import { orderRankField } from '@sanity/orderable-document-list'
 import { createElement } from 'react'
 import { defineField, defineType } from 'sanity'
 
+import DerivedSlugInput from './components/DerivedSlugInput'
 import { muxThumbnailUrl } from './lib/muxThumbnail'
 
 export default defineType({
@@ -67,24 +68,20 @@ export default defineType({
       description:
         'A line or two about the work, e.g. "Social content and creative direction for the summer launch."',
     }),
-    // Derived from `client` and never shown: "slug" and a "Generate" button
-    // are developer vocabulary, and there has never been a reason to set it
-    // by hand. Still validated for uniqueness, because two clients with the
-    // same name would otherwise collide silently.
+    // Shown read-only and filled in automatically from the client name —
+    // see components/DerivedSlugInput.tsx. It stays visible because it is
+    // the address of the project's own page (/work/<slug>), which is worth
+    // being able to see; it is not editable because there is no reason to
+    // type one by hand, and changing it would break shared links.
     defineField({
       name: 'slug',
       title: 'Web address',
       type: 'slug',
-      hidden: true,
-      options: {
-        source: 'client',
-        maxLength: 96,
-        // Runs on publish for documents created before this field was
-        // hidden, and for any created without it.
-        isUnique: () => true,
-      },
+      components: { input: DerivedSlugInput },
+      options: { source: 'client', maxLength: 96 },
+      // Required: without a slug the project has no page to link to.
       validation: (rule) =>
-        rule.custom(async (slug, context) => {
+        rule.required().custom(async (slug, context) => {
           if (!slug?.current) return true
 
           const client = context.getClient({ apiVersion: '2024-01-01' })

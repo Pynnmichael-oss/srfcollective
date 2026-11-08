@@ -72,6 +72,9 @@ export interface Project {
   client: string
   slug?: Slug
   categories?: string[]
+  // Projected only by projectBySlugQuery — the grids never show these.
+  description?: string | null
+  date?: string | null
   // Every photo and video for this client, in the order she arranged them.
   // media[0] is the cover (what the homepage shows). Queries already drop
   // items with nothing uploaded yet, so every item here is renderable.
@@ -85,6 +88,9 @@ export interface MediaTile {
   key: string
   client: string
   categories?: string[]
+  // The project page this item belongs to, e.g. "/work/yacht-hampton".
+  // Undefined only for a project with no slug, which can't be linked to.
+  projectHref?: string
   item: MediaItem
 }
 

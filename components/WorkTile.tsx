@@ -1,4 +1,5 @@
-import type { CSSProperties } from 'react'
+import Link from 'next/link'
+import type { CSSProperties, ReactNode } from 'react'
 
 import { getImageDimensions, urlFor } from '@/lib/sanity/image'
 import type { MediaTile, PhotoItem, VideoItem } from '@/lib/sanity/types'
@@ -13,14 +14,31 @@ const SIZES = '(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw'
 interface WorkTileProps {
   tile: MediaTile
   priority?: boolean
+  // 'link'      -> the whole tile navigates to the project's page. Used on
+  //                /work, where each tile stands for a whole project.
+  // 'spotlight' -> a video opens full-screen in place and a photo is inert.
+  //                Used on the homepage (a quick look) and on a project
+  //                page (where navigating to itself would be pointless).
+  behavior?: 'link' | 'spotlight'
+  // Project pages suppress the caption: every tile there belongs to the
+  // same project, so repeating the client name under each one is noise.
+  caption?: boolean
 }
 
 // One grid cell renders one photo or video. The caption comes from the
 // project the item belongs to, so several tiles from the same project all
 // carry the same client name — see lib/sanity/media.ts.
-function Caption({ client, categories }: { client: string; categories?: string[] }) {
+function Caption({
+  client,
+  categories,
+  show,
+}: {
+  client: string
+  categories?: string[]
+  show: boolean
+}) {
   const tags = categories?.length ? categories.join(', ') : undefined
-  if (!client && !tags) return null
+  if (!show || (!client && !tags)) return null
 
   return (
     <figcaption className={styles.caption}>
@@ -30,7 +48,17 @@ function Caption({ client, categories }: { client: string; categories?: string[]
   )
 }
 
-function VideoTile({ tile, item }: { tile: MediaTile; item: VideoItem }) {
+function VideoTile({
+  tile,
+  item,
+  behavior,
+  caption,
+}: {
+  tile: MediaTile
+  item: VideoItem
+  behavior: 'link' | 'spotlight'
+  caption: boolean
+}) {
   const playbackId = item.video?.asset?.playbackId
   const status = item.video?.asset?.status
 
@@ -51,6 +79,9 @@ function VideoTile({ tile, item }: { tile: MediaTile; item: VideoItem }) {
   }
 
   const alt = item.alt || tile.client || 'Project video'
+  // Link mode falls back to spotlight when the project has no slug, rather
+  // than rendering a dead tile.
+  const href = behavior === 'link' ? tile.projectHref : undefined
 
   return (
     <figure className={styles.tile}>
@@ -63,9 +94,11 @@ function VideoTile({ tile, item }: { tile: MediaTile; item: VideoItem }) {
           previewStart={item.previewStart}
           duration={item.video?.asset?.duration ?? undefined}
           alt={alt}
+          href={href}
+          projectHref={href ? undefined : tile.projectHref}
         />
       </div>
-      <Caption client={tile.client} categories={tile.categories} />
+      <Caption client={tile.client} categories={tile.categories} show={caption} />
     </figure>
   )
 }
@@ -74,10 +107,14 @@ function PhotoTile({
   tile,
   item,
   priority,
+  behavior,
+  caption,
 }: {
   tile: MediaTile
   item: PhotoItem
   priority: boolean
+  behavior: 'link' | 'spotlight'
+  caption: boolean
 }) {
   // Missing-image guard — never render a broken image or empty frame.
   if (!item.asset?._ref) {
@@ -97,6 +134,24 @@ function PhotoTile({
   // Studio's validation (e.g. directly via the write API).
   const alt = item.alt || tile.client || 'Project image'
 
+  const href = behavior === 'link' ? tile.projectHref : undefined
+
+  const picture: ReactNode = (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={src}
+      srcSet={srcSet}
+      sizes={SIZES}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchPriority={priority ? 'high' : 'auto'}
+      decoding="async"
+      className={styles.image}
+    />
+  )
+
   return (
     <figure className={styles.tile}>
       <div
@@ -108,29 +163,36 @@ function PhotoTile({
           } as CSSProperties
         }
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          srcSet={srcSet}
-          sizes={SIZES}
-          alt={alt}
-          width={width}
-          height={height}
-          loading={priority ? 'eager' : 'lazy'}
-          fetchPriority={priority ? 'high' : 'auto'}
-          decoding="async"
-          className={styles.image}
-        />
+        {href ? (
+          <Link href={href} className={styles.photoLink} aria-label={`View the ${tile.client} project`}>
+            {picture}
+          </Link>
+        ) : (
+          picture
+        )}
       </div>
-      <Caption client={tile.client} categories={tile.categories} />
+      <Caption client={tile.client} categories={tile.categories} show={caption} />
     </figure>
   )
 }
 
-export default function WorkTile({ tile, priority = false }: WorkTileProps) {
+export default function WorkTile({
+  tile,
+  priority = false,
+  behavior = 'spotlight',
+  caption = true,
+}: WorkTileProps) {
   if (tile.item._type === 'videoItem') {
-    return <VideoTile tile={tile} item={tile.item} />
+    return <VideoTile tile={tile} item={tile.item} behavior={behavior} caption={caption} />
   }
 
-  return <PhotoTile tile={tile} item={tile.item} priority={priority} />
+  return (
+    <PhotoTile
+      tile={tile}
+      item={tile.item}
+      priority={priority}
+      behavior={behavior}
+      caption={caption}
+    />
+  )
 }
