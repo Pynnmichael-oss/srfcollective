@@ -6,6 +6,8 @@ import { sanityFetch } from "@/lib/sanity/fetch";
 import { aboutSettingsQuery } from "@/lib/sanity/queries";
 import type { AboutSettings } from "@/lib/sanity/types";
 
+export const revalidate = 60
+
 export const metadata: Metadata = {
   title: "About | SRF Collective",
 };

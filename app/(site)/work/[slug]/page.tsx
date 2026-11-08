@@ -13,6 +13,8 @@ import type { Project } from "@/lib/sanity/types";
 
 import styles from "./page.module.css";
 
+export const revalidate = 60
+
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
 }

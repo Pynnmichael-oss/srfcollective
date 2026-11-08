@@ -9,6 +9,8 @@ import type { Project } from "@/lib/sanity/types";
 
 import styles from "./page.module.css";
 
+export const revalidate = 60
+
 export const metadata: Metadata = {
   title: "Work | SRF Collective",
 };

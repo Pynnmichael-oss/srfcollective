@@ -6,6 +6,8 @@ import { sanityFetch } from "@/lib/sanity/fetch";
 import { servicesPageQuery } from "@/lib/sanity/queries";
 import type { ServicesPageData } from "@/lib/sanity/types";
 
+export const revalidate = 60
+
 export const metadata: Metadata = {
   title: "Services | SRF Collective",
 };

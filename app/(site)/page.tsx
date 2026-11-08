@@ -16,6 +16,15 @@ import {
 } from "@/lib/sanity/queries";
 import type { Partner, PressLogo, Project, SiteSettings } from "@/lib/sanity/types";
 
+// Content she publishes in Studio has to reach the site without a redeploy.
+// Every page here is prerendered, so without this the HTML is frozen at
+// build time: she could publish a photo and nothing would change until
+// someone pushed code. Next revalidates at most once every 60 seconds, on
+// the first request after that window — so a publish shows up within about
+// a minute, and visitors still get static HTML.
+export const revalidate = 60
+
+
 export default async function Home() {
   const [siteSettings, featuredProjects, pressLogos, partners] = await Promise.all([
     sanityFetch<SiteSettings | null>(siteSettingsQuery),
