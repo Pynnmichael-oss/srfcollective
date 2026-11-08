@@ -133,6 +133,10 @@ export interface AboutSettings {
   statement?: string | null
   founderIntro?: string | null
   body?: PortableTextBlock[] | null
+  // Candid shoot photos, shown in a masonry grid below the copy. Same
+  // PhotoItem shape as a project's media — queries already drop any with
+  // nothing uploaded yet.
+  behindTheScenes?: PhotoItem[] | null
 }
 
 export interface Service {

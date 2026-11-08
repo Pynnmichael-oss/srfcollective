@@ -62,6 +62,17 @@ export default defineType({
         }),
       ],
     }),
+    defineField({
+      name: 'behindTheScenes',
+      title: 'Behind the scenes',
+      type: 'array',
+      // Reuses the same Photo type as a project's media, so a batch of
+      // photos can be dragged straight onto the field and each one takes
+      // optional alt text — nothing new for her to learn.
+      of: [{ type: 'photoItem' }],
+      description:
+        'Optional. Candid photos from shoots, shown in a grid lower down the About page. Drag a whole batch in at once. Each photo keeps its own shape — portrait and landscape both work, nothing is cropped — and they appear in the order you arrange them here. Leave this empty and the section does not appear at all.',
+    }),
   ],
   preview: {
     prepare() {

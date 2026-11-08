@@ -1,0 +1,58 @@
+/* Spacing and type come from the same tokens as the Work grid, so this
+   section sits in the existing rhythm rather than inventing its own. */
+.section {
+  padding: 0 var(--gutter-desktop) var(--section-y-desktop);
+}
+
+.header {
+  margin: 0 0 var(--label-gap);
+}
+
+.label {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-nav);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* CSS-columns masonry, matching WorkGrid: photos keep their natural shape
+   and tile vertically without a JS layout pass. */
+.grid {
+  column-count: 3;
+  column-gap: var(--grid-gap);
+}
+
+.item {
+  /* break-inside stops a photo being split across two columns. */
+  break-inside: avoid;
+  margin: 0 0 var(--grid-gap);
+  overflow: hidden;
+  background-color: #0e0e0e;
+  background-size: cover;
+  background-position: center;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 560px) {
+  .section {
+    padding: 0 var(--gutter-mobile) var(--section-y-mobile);
+  }
+
+  .grid {
+    column-count: 1;
+  }
+}

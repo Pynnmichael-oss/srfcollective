@@ -133,7 +133,14 @@ export const aboutSettingsQuery = groq`
     portraitAlt,
     statement,
     founderIntro,
-    body
+    body,
+    "behindTheScenes": behindTheScenes[defined(asset._ref)]{
+      _key,
+      _type,
+      asset,
+      hotspot,
+      alt
+    }
   }
 `
 
