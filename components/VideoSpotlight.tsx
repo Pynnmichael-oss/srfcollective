@@ -227,6 +227,11 @@ export default function VideoSpotlight({
           <line x1="20" y1="4" x2="4" y2="20" />
         </svg>
       </button>
+      {projectHref && (
+        <Link href={projectHref} className={styles.projectLink}>
+          View full project <span aria-hidden="true">→</span>
+        </Link>
+      )}
       <div
         className={`${styles.content} ${visible ? styles.visible : ''}`}
         style={{ '--content-ratio': aspectRatio || measuredRatio || undefined } as CSSProperties}
@@ -238,11 +243,6 @@ export default function VideoSpotlight({
           playsInline
           className={styles.player}
         />
-        {projectHref && (
-          <Link href={projectHref} className={styles.projectLink}>
-            View full project <span aria-hidden="true">→</span>
-          </Link>
-        )}
       </div>
     </dialog>
   )

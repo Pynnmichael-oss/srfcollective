@@ -4,6 +4,7 @@ import { createElement } from 'react'
 import { defineField, defineType } from 'sanity'
 
 import DerivedSlugInput from './components/DerivedSlugInput'
+import HeroPickerInput from './components/HeroPickerInput'
 import { muxThumbnailUrl } from './lib/muxThumbnail'
 
 export default defineType({
@@ -60,13 +61,16 @@ export default defineType({
         'Add every photo and video for this client or campaign — they all appear on your Work page. You can drag a whole batch of photos in at once. The first item is the cover: drag your best piece to the top, since that is what shows on the homepage.',
       validation: (rule) => rule.min(1).error('Add at least one photo or video.'),
     }),
+    // Replaces an earlier dedicated "Cover photo" upload field. Choosing from
+    // what she has already added avoids uploading the same frame twice, and
+    // keeps the banner guaranteed to be work that is actually in the project.
     defineField({
-      name: 'coverPhoto',
-      title: 'Cover photo',
-      type: 'image',
-      options: { hotspot: true },
+      name: 'heroPhotoKey',
+      title: 'Hero image',
+      type: 'string',
+      components: { input: HeroPickerInput },
       description:
-        'Optional. The wide banner across the top of this project’s own page. A landscape photo works best: a portrait video stretched that wide gets cropped to a thin strip and looks soft. Use the crop tool to set which part stays in frame. Leave this empty and the first item above is used instead, shown at its own natural shape rather than stretched.',
+        'Which photo runs large across the top of this project’s page, with the client name over it. Only photos are offered: a portrait video stretched that wide gets cropped to a thin strip and looks soft. Leave it on “First item” and the first thing in the list is used, at its own natural shape.',
     }),
     defineField({
       name: 'description',
@@ -74,7 +78,15 @@ export default defineType({
       type: 'text',
       rows: 3,
       description:
-        'A line or two about the work, e.g. "Social content and creative direction for the summer launch."',
+        'A line or two about the work, e.g. "Social content and creative direction for the summer launch." This is also the sentence Google shows under the link to this project.',
+    }),
+    defineField({
+      name: 'details',
+      title: 'Project details',
+      type: 'array',
+      of: [{ type: 'detailRow' }],
+      description:
+        'Optional. Add a row for anything worth listing — Location, Team, Deliverables, Partner. They appear as a neat labelled list on the project page, in the order you put them here. Add as many or as few as you like.',
     }),
     // Shown read-only and filled in automatically from the client name —
     // see components/DerivedSlugInput.tsx. It stays visible because it is

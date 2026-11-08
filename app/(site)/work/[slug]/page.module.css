@@ -1,21 +1,19 @@
 .main {
-  /* The hero is full-bleed and handles its own width, so no top padding
-     here — the cover meets the header cleanly. */
+  /* The hero handles its own width and spacing, so no top padding here —
+     the banner meets the header cleanly. */
   padding-bottom: 6rem;
 }
 
-.details {
-  max-width: 48rem;
-  margin: 3.5rem auto 0;
-  padding: 0 1.5rem;
-  text-align: center;
-}
-
+/* ---- Title block ----
+   Shared by both positions: overlaid on a photo banner (.overlayTitle) or
+   below a contained video hero (.titleBelow). The type styles live on the
+   elements so the two can't drift apart. */
 .client {
   margin: 0;
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-size: clamp(1.75rem, 4vw, 3rem);
   font-weight: 300;
   letter-spacing: -0.01em;
+  line-height: 1.1;
 }
 
 .meta {
@@ -23,28 +21,96 @@
   font-size: 0.8125rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  opacity: 0.6;
+  opacity: 0.75;
 }
 
 .separator {
   opacity: 0.5;
 }
 
-.description {
-  margin: 1.5rem 0 0;
-  font-size: 1.0625rem;
-  line-height: 1.7;
-  opacity: 0.85;
+/* Over the banner: left-aligned against the gutter, which reads as
+   deliberate composition rather than a centred caption floating on a photo. */
+.overlayTitle {
+  max-width: 48rem;
+  text-shadow: 0 1px 24px rgba(0, 0, 0, 0.35);
 }
 
-/* Two columns, as chosen. Collapses to one on phones, where side-by-side
-   portrait video is unreadably small. */
+.titleBelow {
+  max-width: 48rem;
+  margin: 2.5rem auto 0;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+/* ---- Description + details ----
+   Two columns on desktop: the prose carries the weight, the details sit
+   beside it as a reference list. Stacks on narrow screens. */
+.body {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: start;
+  max-width: 68rem;
+  margin: clamp(2.5rem, 6vw, 4.5rem) auto 0;
+  padding: 0 1.5rem;
+}
+
+@media (max-width: 760px) {
+  .body {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.description {
+  margin: 0;
+  font-size: clamp(1rem, 1.4vw, 1.1875rem);
+  line-height: 1.75;
+  opacity: 0.88;
+}
+
+.details {
+  margin: 0;
+  display: grid;
+  gap: 1.125rem;
+}
+
+.detailRow {
+  display: grid;
+  gap: 0.25rem;
+  /* A hairline per row reads as a spec sheet — the "clean, professional"
+     look — without boxing anything in. */
+  padding-bottom: 1rem;
+  border-bottom: 1px solid currentColor;
+  border-color: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.detailRow:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.detailLabel {
+  margin: 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.detailValue {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* ---- Remaining media ---- */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   max-width: 76rem;
-  margin: 4rem auto 0;
+  margin: clamp(3rem, 7vw, 5rem) auto 0;
   padding: 0 1.5rem;
 }
 

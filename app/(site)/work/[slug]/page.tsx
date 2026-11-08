@@ -6,14 +6,14 @@ import ProjectHero from "@/components/ProjectHero";
 import WorkTile from "@/components/WorkTile";
 import { client } from "@/lib/sanity/client";
 import { sanityFetch } from "@/lib/sanity/fetch";
-import { allTiles } from "@/lib/sanity/media";
+import { resolveHero, tilesExcept } from "@/lib/sanity/media";
 import { projectBySlugQuery, projectSlugsQuery } from "@/lib/sanity/queries";
 import { cleanProject } from "@/lib/sanity/stega";
 import type { Project } from "@/lib/sanity/types";
 
 import styles from "./page.module.css";
 
-export const revalidate = 60
+export const revalidate = 60;
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
@@ -58,8 +58,6 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     return { title: "Project not found | SRF Collective" };
   }
 
-  // `description` finally does something: it's the sentence Google shows
-  // under the link, and what appears when the page is shared.
   const description =
     project.description ||
     `${project.client} — ${project.categories?.join(", ") ?? "work"} by SRF Collective.`;
@@ -80,37 +78,63 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   const project = cleanProject(raw);
-  const tiles = allTiles([project]);
-  // media[0] is the cover and gets the full-bleed treatment above; the rest
-  // fill the two-column grid below it.
-  const [cover, ...rest] = tiles;
+  const hero = resolveHero(project);
 
-  if (!cover) {
+  if (!hero) {
     notFound();
   }
 
+  const tiles = tilesExcept(project, hero.item._key);
   const categories = project.categories?.length ? project.categories.join(", ") : null;
   const date = formatProjectDate(project.date);
+  const details = (project.details ?? []).filter((row) => row.label && row.value);
+
+  // The same title block in both places — overlaid on a photo banner, or
+  // below a contained video hero. Written once so the two can't drift.
+  const title = (
+    <>
+      <h1 className={styles.client}>{project.client}</h1>
+      {(categories || date) && (
+        <p className={styles.meta}>
+          {categories}
+          {categories && date && <span className={styles.separator}> · </span>}
+          {date}
+        </p>
+      )}
+    </>
+  );
 
   return (
     <main className={styles.main}>
-      <ProjectHero item={cover.item} client={project.client} coverPhoto={project.coverPhoto} />
+      <ProjectHero
+        item={hero.item}
+        mode={hero.mode}
+        client={project.client}
+        overlay={hero.mode === "banner" ? <div className={styles.overlayTitle}>{title}</div> : null}
+      />
 
-      <header className={styles.details}>
-        <h1 className={styles.client}>{project.client}</h1>
-        {(categories || date) && (
-          <p className={styles.meta}>
-            {categories}
-            {categories && date && <span className={styles.separator}> · </span>}
-            {date}
-          </p>
-        )}
-        {project.description && <p className={styles.description}>{project.description}</p>}
-      </header>
+      {/* A contained hero carries no overlay, so the title goes here. */}
+      {hero.mode === "contained" && <header className={styles.titleBelow}>{title}</header>}
 
-      {rest.length > 0 && (
+      {(project.description || details.length > 0) && (
+        <section className={styles.body}>
+          {project.description && <p className={styles.description}>{project.description}</p>}
+          {details.length > 0 && (
+            <dl className={styles.details}>
+              {details.map((row) => (
+                <div key={row._key} className={styles.detailRow}>
+                  <dt className={styles.detailLabel}>{row.label}</dt>
+                  <dd className={styles.detailValue}>{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </section>
+      )}
+
+      {tiles.length > 0 && (
         <div className={styles.grid}>
-          {rest.map((tile) => (
+          {tiles.map((tile) => (
             // caption off: every tile here is the same client, so repeating
             // the name under each one is noise. behavior defaults to
             // spotlight — videos open full-screen, photos sit still.

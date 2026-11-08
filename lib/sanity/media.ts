@@ -38,3 +38,41 @@ export function coverTiles(projects: Project[]): MediaTile[] {
 export function allTiles(projects: Project[]): MediaTile[] {
   return projects.flatMap((project) => (project.media ?? []).map((item) => toTile(project, item)))
 }
+
+export interface ResolvedHero {
+  item: MediaItem
+  // 'banner'    -> a photo, full-bleed across the viewport with the project
+  //                name overlaid on it.
+  // 'contained' -> a video, at its own natural shape and height-capped.
+  //                Never full-bleed: cropping a 9:16 portrait into a wide
+  //                banner discards most of the frame and upscales the rest.
+  mode: 'banner' | 'contained'
+}
+
+/**
+ * Which media item heads a project page, and how it's shown.
+ *
+ * Her pick (heroPhotoKey) wins; if it's missing or points at something that
+ * has since been deleted, the first item is used. Only a photo earns the
+ * full-bleed banner — see ResolvedHero.
+ */
+export function resolveHero(project: Project): ResolvedHero | null {
+  const media = project.media ?? []
+  if (!media.length) return null
+
+  const chosen = project.heroPhotoKey
+    ? media.find((item) => item._key === project.heroPhotoKey && item._type === 'photoItem')
+    : undefined
+
+  const item = chosen ?? media[0]
+
+  return { item, mode: item._type === 'photoItem' ? 'banner' : 'contained' }
+}
+
+/**
+ * Every tile except the one heading the page, so the hero isn't also
+ * repeated in the grid below it.
+ */
+export function tilesExcept(project: Project, heroKey: string | undefined): MediaTile[] {
+  return allTiles([project]).filter((tile) => tile.item._key !== heroKey)
+}

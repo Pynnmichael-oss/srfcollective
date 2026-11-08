@@ -30,6 +30,33 @@
   /* object-position is set inline, from the image's hotspot. */
 }
 
+/* Guarantees contrast behind the overlaid title whatever the photo is,
+   while leaving the top two-thirds of the image untouched. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 45%,
+    rgba(0, 0, 0, 0.35) 70%,
+    rgba(0, 0, 0, 0.72) 100%
+  );
+}
+
+.overlay {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 0 var(--gutter-desktop, 2rem) clamp(1.5rem, 4vw, 3rem);
+  color: #fff;
+}
+
+@media (max-width: 720px) {
+  .overlay {
+    padding-inline: var(--gutter-mobile, 1rem);
+  }
+}
+
 /* ---- Contained: the fallback, media[0] at its natural shape ----
    Sized by height, so width follows the aspect ratio. A 9:16 portrait
    ends up a tall, narrow block rather than a stretched strip, and the

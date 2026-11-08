@@ -95,9 +95,10 @@ export const projectSlugsQuery = groq`
 export const projectBySlugQuery = groq`
   *[_type == "project" && slug.current == $slug && (${HAS_RAW_MEDIA})][0]{
     ${projectProjection},
-    coverPhoto,
+    heroPhotoKey,
     description,
-    date
+    date,
+    details[]{ _key, label, value }
   }
 `
 

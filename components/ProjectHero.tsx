@@ -1,7 +1,7 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 import { getImageDimensions, urlFor } from '@/lib/sanity/image'
-import type { MediaItem, SanityImage } from '@/lib/sanity/types'
+import type { MediaItem, PhotoItem } from '@/lib/sanity/types'
 import { parseMuxRatio } from '@/lib/sanity/video'
 
 import styles from './ProjectHero.module.css'
@@ -11,30 +11,38 @@ const BANNER_WIDTHS = [800, 1200, 1600, 2000, 2400]
 const CONTAINED_WIDTHS = [400, 800, 1200, 1600]
 
 interface ProjectHeroProps {
-  // The project's cover: media[0], whatever she dragged to the top. Used
-  // only when there's no cover photo.
   item: MediaItem
+  mode: 'banner' | 'contained'
   client: string
-  coverPhoto?: SanityImage | null
+  // The title block. In banner mode it's overlaid on the image; in
+  // contained mode the page renders it below instead, since text over a
+  // tall video is both hard to read and in the way of the play control.
+  overlay?: ReactNode
 }
 
-// Sanity's hotspot, expressed as CSS object-position, so the browser does
-// the responsive cropping while still keeping her chosen focal point in
-// frame. Beats requesting a pre-cropped URL: one image serves the wide
-// desktop banner and the taller mobile one without a second fetch.
-function hotspotPosition(image: SanityImage): string {
-  const hotspot = image.hotspot
-  if (!hotspot) return '50% 50%'
-  return `${(hotspot.x * 100).toFixed(2)}% ${(hotspot.y * 100).toFixed(2)}%`
+// Sanity's hotspot as a CSS object-position, so the browser does the
+// responsive cropping while keeping her chosen focal point in frame. One
+// image then serves the wide desktop banner and the taller mobile one with
+// no second fetch.
+function hotspotPosition(image: PhotoItem): string {
+  if (!image.hotspot) return '50% 50%'
+  return `${(image.hotspot.x * 100).toFixed(2)}% ${(image.hotspot.y * 100).toFixed(2)}%`
 }
 
-// The wide banner across the top of a project page.
-function Banner({ image, client }: { image: SanityImage; client: string }) {
-  const src = urlFor(image).width(2400).fit('max').auto('format').url()
+function Banner({
+  item,
+  client,
+  overlay,
+}: {
+  item: PhotoItem
+  client: string
+  overlay?: ReactNode
+}) {
+  const src = urlFor(item).width(2400).fit('max').auto('format').url()
   const srcSet = BANNER_WIDTHS.map(
-    (w) => `${urlFor(image).width(w).fit('max').auto('format').url()} ${w}w`,
+    (w) => `${urlFor(item).width(w).fit('max').auto('format').url()} ${w}w`,
   ).join(', ')
-  const placeholder = urlFor(image).width(24).quality(20).blur(50).url()
+  const placeholder = urlFor(item).width(24).quality(20).blur(50).url()
 
   return (
     <div
@@ -46,30 +54,33 @@ function Banner({ image, client }: { image: SanityImage; client: string }) {
         src={src}
         srcSet={srcSet}
         sizes="100vw"
-        alt={client}
+        alt={item.alt || client}
         loading="eager"
         fetchPriority="high"
         decoding="async"
         className={styles.bannerImage}
-        style={{ objectPosition: hotspotPosition(image) }}
+        style={{ objectPosition: hotspotPosition(item) }}
       />
+      {overlay && (
+        <>
+          {/* Gradient, not a flat tint: keeps the top of the photo untouched
+              while guaranteeing contrast behind the text at the bottom,
+              whatever the photo happens to be. */}
+          <div className={styles.scrim} aria-hidden="true" />
+          <div className={styles.overlay}>{overlay}</div>
+        </>
+      )}
     </div>
   )
 }
 
-export default function ProjectHero({ item, client, coverPhoto }: ProjectHeroProps) {
-  // A cover photo is a deliberate choice for this slot, so it gets the
-  // full-bleed treatment.
-  if (coverPhoto?.asset?._ref) {
-    return <Banner image={coverPhoto} client={client} />
+export default function ProjectHero({ item, mode, client, overlay }: ProjectHeroProps) {
+  if (mode === 'banner' && item._type === 'photoItem' && item.asset?._ref) {
+    return <Banner item={item} client={client} overlay={overlay} />
   }
 
-  // No cover photo: show media[0] at its own shape, centred and sized by
-  // height. Deliberately NOT full-bleed — cropping a 9:16 portrait into a
-  // viewport-wide banner throws away most of the frame and upscales what's
-  // left, which looks soft on 720p source footage. Height-driven sizing
-  // (aspect-ratio + a height cap) means the width follows the content and
-  // the asset is only ever scaled down, never up.
+  // Contained: the item at its own shape, sized by height so width follows
+  // the content and the asset is only ever scaled down, never up.
   if (item._type === 'videoItem') {
     const playbackId = item.video?.asset?.playbackId
     const status = item.video?.asset?.status

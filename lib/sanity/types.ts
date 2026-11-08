@@ -66,6 +66,13 @@ export interface VideoItem {
 
 export type MediaItem = PhotoItem | VideoItem
 
+// One labelled fact on a project page — "Location / The Hamptons".
+export interface DetailRow {
+  _key: string
+  label?: string | null
+  value?: string | null
+}
+
 export interface Project {
   _id: string
   _type: 'project'
@@ -73,11 +80,13 @@ export interface Project {
   slug?: Slug
   categories?: string[]
   // Projected only by projectBySlugQuery — the grids never show these.
-  // coverPhoto is the project page's wide banner; without one the page
-  // falls back to media[0] at its natural shape.
-  coverPhoto?: SanityImage | null
+  // heroPhotoKey is the _key of the media item chosen as the page's banner;
+  // unset means "use media[0]". Stored as a key, not an index, so
+  // reordering the media list doesn't change the choice.
+  heroPhotoKey?: string | null
   description?: string | null
   date?: string | null
+  details?: DetailRow[] | null
   // Every photo and video for this client, in the order she arranged them.
   // media[0] is the cover (what the homepage shows). Queries already drop
   // items with nothing uploaded yet, so every item here is renderable.
