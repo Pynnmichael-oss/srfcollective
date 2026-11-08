@@ -1,14 +1,14 @@
 import { createImageUrlBuilder } from '@sanity/image-url'
 
 import { dataset, projectId } from './client'
-import type { SanityImage } from './types'
+import type { ImageSource } from './types'
 
 const builder = createImageUrlBuilder({
   projectId: projectId ?? '',
   dataset: dataset ?? '',
 })
 
-export function urlFor(source: SanityImage) {
+export function urlFor(source: ImageSource) {
   return builder.image(source)
 }
 
@@ -16,7 +16,7 @@ export function urlFor(source: SanityImage) {
 // "image-<assetId>-<width>x<height>-<format>". Parsing this gives an
 // intrinsic width/height for layout (aspect-ratio, no CLS) without
 // needing to add asset dereferencing to the existing queries.
-export function getImageDimensions(source: SanityImage): { width: number; height: number } {
+export function getImageDimensions(source: ImageSource): { width: number; height: number } {
   const ref = source?.asset?._ref ?? ''
   const match = ref.match(/-(\d+)x(\d+)-/)
 

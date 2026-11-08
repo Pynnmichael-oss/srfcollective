@@ -5,12 +5,19 @@ import { groq } from 'next-sanity'
 
 // Shared by every query that lists projects (homepage highlights, /work) —
 // keep in sync with schemas/project.ts, and don't rename fields here
-// without updating every consumer (WorkTile, page.tsx, work/page.tsx).
-const projectProjection = groq`
-  _id,
+// without updating every consumer (WorkTile, media.ts, page.tsx,
+// work/page.tsx).
+//
+// `media` is an array of two member types (schemas/objects/photoItem.ts and
+// videoItem.ts), so one projection covers both: a photoItem IS an image, so
+// its asset/hotspot sit directly on the item, while a videoItem carries
+// `video` and `previewStart`. The fields that don't apply come back null,
+// and WorkTile branches on `_type`.
+const mediaProjection = groq`
+  _key,
   _type,
-  mediaType,
-  image,
+  asset,
+  hotspot,
   video{
     asset->{
       playbackId,
@@ -20,19 +27,34 @@ const projectProjection = groq`
     }
   },
   previewStart,
-  client,
-  category,
   alt
 `
 
-// A project with neither an image nor a video asset defined is either a
-// dangling weak reference (siteSettings.featuredProjects can point at a
-// deleted project, which dereferences to null) or genuinely has nothing
-// to render — either way, skip it. Checking both media types, not just
-// image, matters: several real video projects have no fallback `image`
-// set at all (mediaType: "video" is enough on its own; WorkTile only
-// falls back to `image` when the Mux ratio can't be parsed).
-const HAS_MEDIA = groq`defined(image.asset) || defined(video.asset)`
+// An item with nothing uploaded yet renders as nothing, so it's dropped at
+// the query rather than guarded in every component: a half-finished media
+// item is a normal state in Studio (she adds the row, then uploads), and
+// the live site should simply not show it.
+const RENDERABLE = groq`(_type == "photoItem" && defined(asset._ref)) || (_type == "videoItem" && defined(video.asset))`
+
+const projectProjection = groq`
+  _id,
+  _type,
+  client,
+  categories,
+  "media": media[${RENDERABLE}]{
+    ${mediaProjection}
+  }
+`
+
+// Two forms of the same question, because the two queries ask it at
+// different points. This one runs against the raw document, before
+// projection, where `media` still holds unrenderable items.
+const HAS_RAW_MEDIA = groq`count(media[${RENDERABLE}]) > 0`
+
+// ...and this one runs against the already-projected result, where `media`
+// has been filtered down by projectProjection, so being non-empty is the
+// whole test.
+const HAS_PROJECTED_MEDIA = groq`count(media) > 0`
 
 // Rosie's curated homepage picks, in the order she set in Studio (siteSettings
 // > Homepage highlights). Array order from -> is preserved by GROQ; no sort.
@@ -42,15 +64,18 @@ const HAS_MEDIA = groq`defined(image.asset) || defined(video.asset)`
 // nulls out every element instead of filtering them — confirmed against
 // the live dataset with a dangling reference. Wrapping in () first, then
 // filtering the resulting array, is the only form that behaves correctly.
+//
+// The filter also drops dangling weak references: siteSettings.featuredProjects
+// can point at a deleted project, which dereferences to null.
 export const featuredProjectsQuery = groq`
   (*[_type == "siteSettings"][0].featuredProjects[]->{
     ${projectProjection}
-  })[${HAS_MEDIA}]
+  })[${HAS_PROJECTED_MEDIA}]
 `
 
 // Full portfolio for /work, in the same Studio drag-order as the Projects list.
 export const workProjectsQuery = groq`
-  *[_type == "project" && (${HAS_MEDIA})] | order(orderRank) {
+  *[_type == "project" && (${HAS_RAW_MEDIA})] | order(orderRank) {
     ${projectProjection}
   }
 `

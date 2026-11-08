@@ -3,7 +3,6 @@ import { orderRankField } from '@sanity/orderable-document-list'
 import { createElement } from 'react'
 import { defineField, defineType } from 'sanity'
 
-import PreviewStartInput from './components/PreviewStartInput'
 import { muxThumbnailUrl } from './lib/muxThumbnail'
 
 export default defineType({
@@ -11,7 +10,17 @@ export default defineType({
   title: 'Project',
   type: 'document',
   icon: ImagesIcon,
+  // Field order is the editing order: name the client first, then date it,
+  // tag it, then upload. `slug` used to sit below the uploader, which meant
+  // scrolling past every photo to type the client's name.
   fields: [
+    defineField({
+      name: 'client',
+      title: 'Client',
+      type: 'string',
+      description: 'The name of the client or brand this project was made for.',
+      validation: (rule) => rule.required(),
+    }),
     defineField({
       name: 'date',
       title: 'Date',
@@ -43,11 +52,11 @@ export default defineType({
     }),
     defineField({
       name: 'media',
-      title: 'Media',
+      title: 'Photos & videos',
       type: 'array',
-      of: [{ type: 'mediaItem' }],
+      of: [{ type: 'photoItem' }, { type: 'videoItem' }],
       description:
-        'Add every photo and video for this client or campaign. You can drag several photos in at once. The first item is the cover: drag your best piece to the top.',
+        'Add every photo and video for this client or campaign — they all appear on your Work page. You can drag a whole batch of photos in at once. The first item is the cover: drag your best piece to the top, since that is what shows on the homepage.',
       validation: (rule) => rule.min(1).error('Add at least one photo or video.'),
     }),
     defineField({
@@ -58,58 +67,24 @@ export default defineType({
       description:
         'A line or two about the work, e.g. "Social content and creative direction for the summer launch."',
     }),
-    // Superseded by `media` (an array of mediaItem) — kept hidden, with
-    // their data in place, so the live site (which still reads these) keeps
-    // working until a later task switches the front end over to `media`.
-    defineField({
-      name: 'mediaType',
-      title: 'Media type (old, superseded by Media)',
-      type: 'string',
-      hidden: true,
-      options: {
-        list: [
-          { title: 'Image', value: 'image' },
-          { title: 'Video', value: 'video' },
-        ],
-      },
-      initialValue: 'image',
-    }),
-    defineField({
-      name: 'image',
-      title: 'Image (old, superseded by Media)',
-      type: 'image',
-      options: { hotspot: true },
-      hidden: true,
-    }),
-    defineField({
-      name: 'video',
-      title: 'Video (old, superseded by Media)',
-      type: 'mux.video',
-      hidden: true,
-    }),
-    defineField({
-      name: 'previewStart',
-      title: 'Preview start (old, superseded by Media)',
-      type: 'number',
-      hidden: true,
-      components: { input: PreviewStartInput },
-    }),
-    defineField({
-      name: 'client',
-      title: 'Client',
-      type: 'string',
-      description: 'The name of the client or brand this project was made for.',
-      validation: (rule) => rule.required(),
-    }),
+    // Derived from `client` and never shown: "slug" and a "Generate" button
+    // are developer vocabulary, and there has never been a reason to set it
+    // by hand. Still validated for uniqueness, because two clients with the
+    // same name would otherwise collide silently.
     defineField({
       name: 'slug',
-      title: 'Slug',
+      title: 'Web address',
       type: 'slug',
-      description:
-        'The web address for this client\'s page. Click Generate after entering the client name; you shouldn\'t need to change it.',
-      options: { source: 'client', maxLength: 96 },
+      hidden: true,
+      options: {
+        source: 'client',
+        maxLength: 96,
+        // Runs on publish for documents created before this field was
+        // hidden, and for any created without it.
+        isUnique: () => true,
+      },
       validation: (rule) =>
-        rule.required().custom(async (slug, context) => {
+        rule.custom(async (slug, context) => {
           if (!slug?.current) return true
 
           const client = context.getClient({ apiVersion: '2024-01-01' })
@@ -120,30 +95,8 @@ export default defineType({
             { slug: slug.current, id },
           )
 
-          return existing === 0 || 'This slug is already used by another project'
+          return existing === 0 || 'Another project already uses this client name'
         }),
-    }),
-    defineField({
-      name: 'category',
-      title: 'Category (old, superseded by Categories)',
-      type: 'string',
-      hidden: true,
-    }),
-    defineField({
-      name: 'alt',
-      title: 'Alt text (old, superseded by Media)',
-      type: 'string',
-      hidden: true,
-    }),
-    // Superseded — every tile now renders at its asset's real aspect ratio
-    // automatically (see components/WorkTile.tsx), so this hint is no
-    // longer read anywhere. Hidden rather than deleted/patched: 5 existing
-    // documents have a value set, left in place for a separate cleanup.
-    defineField({
-      name: 'aspectRatioHint',
-      title: 'Aspect ratio hint',
-      type: 'string',
-      hidden: true,
     }),
     orderRankField({ type: 'project' }),
   ],
@@ -151,43 +104,32 @@ export default defineType({
     select: {
       title: 'client',
       categories: 'categories',
-      coverMediaType: 'media.0.mediaType',
-      coverImage: 'media.0.image',
-      coverVideoPlaybackId: 'media.0.video.asset.playbackId',
+      coverType: 'media.0._type',
+      coverPhoto: 'media.0',
+      coverPlaybackId: 'media.0.video.asset.playbackId',
       coverPreviewStart: 'media.0.previewStart',
-      // Fallback for any project that predates the `media` array (none
-      // today, post-migration, but expand/contract leaves the old fields
-      // live) — same dereference approach, no async lookup either way.
-      oldImage: 'image',
-      oldVideoPlaybackId: 'video.asset.playbackId',
-      oldPreviewStart: 'previewStart',
+      mediaCount: 'media',
     },
-    prepare({
-      title,
-      categories,
-      coverMediaType,
-      coverImage,
-      coverVideoPlaybackId,
-      coverPreviewStart,
-      oldImage,
-      oldVideoPlaybackId,
-      oldPreviewStart,
-    }) {
-      const videoPlaybackId = coverMediaType ? coverVideoPlaybackId : oldVideoPlaybackId
-      const previewStart = coverMediaType ? coverPreviewStart : oldPreviewStart
-      const image = coverMediaType ? coverImage : oldImage
-      const isVideo = coverMediaType ? coverMediaType === 'video' : Boolean(videoPlaybackId)
+    prepare({ title, categories, coverType, coverPhoto, coverPlaybackId, coverPreviewStart, mediaCount }) {
+      const count = Array.isArray(mediaCount) ? mediaCount.length : 0
+      const tags = Array.isArray(categories) ? categories.join(', ') : undefined
+      const pieces = count === 1 ? '1 item' : `${count} items`
 
       return {
         title,
-        subtitle: Array.isArray(categories) ? categories.join(', ') : undefined,
+        subtitle: tags ? `${tags} · ${pieces}` : pieces,
+        // A photoItem is an `image` member, so its value is itself an image
+        // and Sanity's own preview machinery renders it as-is. A videoItem
+        // needs a Mux thumbnail URL built from the dereferenced playbackId.
         media:
-          isVideo && videoPlaybackId
-            ? createElement('img', {
-                src: muxThumbnailUrl(videoPlaybackId, previewStart),
-                alt: '',
-              })
-            : image,
+          coverType === 'videoItem'
+            ? coverPlaybackId
+              ? createElement('img', {
+                  src: muxThumbnailUrl(coverPlaybackId, coverPreviewStart),
+                  alt: '',
+                })
+              : undefined
+            : coverPhoto,
       }
     },
   },

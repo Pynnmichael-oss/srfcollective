@@ -43,10 +43,17 @@ export default defineConfig({
       },
       resolve: {
         locations: {
+          // Every project appears on /work; only the ones she picked as
+          // homepage highlights appear on /. Both are offered so the
+          // "Used on these pages" list opens the page that actually shows
+          // the edit, rather than always sending her to the homepage.
           project: defineLocations({
             select: { client: 'client' },
             resolve: (doc) => ({
-              locations: [{ title: doc?.client || 'Untitled project', href: '/' }],
+              locations: [
+                { title: `${doc?.client || 'Untitled project'} — Work page`, href: '/work' },
+                { title: 'Homepage (if highlighted)', href: '/' },
+              ],
             }),
           }),
           pressLogo: defineLocations({

@@ -2,9 +2,11 @@
 // These mirror the fields defined in schemas/ — kept in sync manually,
 // since schema type generation isn't set up.
 
-export interface SanityImage {
-  _type: 'image'
-  asset: {
+// Anything urlFor()/getImageDimensions() can take: both a plain `image`
+// field (SanityImage, below) and a `photoItem` array member, which is an
+// image whose `_type` carries the member name instead of 'image'.
+export interface ImageSource {
+  asset?: {
     _ref: string
     _type: 'reference'
   }
@@ -13,6 +15,14 @@ export interface SanityImage {
     y: number
     height: number
     width: number
+  }
+}
+
+export interface SanityImage extends ImageSource {
+  _type: 'image'
+  asset: {
+    _ref: string
+    _type: 'reference'
   }
 }
 
@@ -34,19 +44,48 @@ export interface Slug {
   current: string
 }
 
-export interface Project {
-  _id: string
-  _type: 'project'
-  mediaType?: 'image' | 'video'
-  image?: SanityImage
+// One photo in a project's `media` array. Declared in the schema as an
+// `image` array member (see schemas/objects/photoItem.ts), so the item IS
+// the image — asset and hotspot sit directly on it, not under `.image`.
+export interface PhotoItem extends ImageSource {
+  _key: string
+  _type: 'photoItem'
+  alt?: string
+}
+
+// One video in a project's `media` array.
+export interface VideoItem {
+  _key: string
+  _type: 'videoItem'
   video?: MuxVideo | null
-  slug?: Slug
   // Seconds into the video where the grid's 10-second preview starts.
   // Missing/undefined means "from 0:00" (see lib/video.ts's clipWindow()).
   previewStart?: number
-  client: string
-  category: string
   alt?: string
+}
+
+export type MediaItem = PhotoItem | VideoItem
+
+export interface Project {
+  _id: string
+  _type: 'project'
+  client: string
+  slug?: Slug
+  categories?: string[]
+  // Every photo and video for this client, in the order she arranged them.
+  // media[0] is the cover (what the homepage shows). Queries already drop
+  // items with nothing uploaded yet, so every item here is renderable.
+  media?: MediaItem[]
+}
+
+// A single grid cell: one photo or video, plus the project captioning it.
+// The grids render tiles, not projects, because one project can hold many
+// items — see lib/sanity/media.ts for how projects become tiles.
+export interface MediaTile {
+  key: string
+  client: string
+  categories?: string[]
+  item: MediaItem
 }
 
 // Minimal shape of a Portable Text block as returned by the API — only what
